@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { supabase } from "../client";
 import { Link, useNavigate } from "react-router-dom";
-import "./SignUp.css"; // Import CSS file
+import "../styling/SignUp.css"; // Import CSS file
 
 const SignUp = () => {
   let navigate = useNavigate();

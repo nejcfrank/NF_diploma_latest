@@ -4,7 +4,7 @@
 import React, { useState } from "react";
 import { supabase } from "../client";
 import { Link, useNavigate } from "react-router-dom";
-import "./Login.css"; // Import CSS file
+import "../styling/Login.css"; // Import CSS file
 
 const Login = ({ setToken }) => {
   let navigate = useNavigate();
