@@ -22,6 +22,28 @@ const SignUp = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+  
+    // Validation
+    if (!formData.fullName || !formData.email || !formData.password) {
+      alert("All fields are required.");
+      return;
+    }
+  
+    if (!isValidEmail(formData.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+  
+    if (formData.password.length < 6) {
+      alert("Password must be at least 6 characters long.");
+      return;
+    }
+  
+    if (!isStrongPassword(formData.password)) {
+      alert("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+      return;
+    }
+  
     try {
       // eslint-disable-next-line no-unused-vars
       const { data, error } = await supabase.auth.signUp({
@@ -39,6 +61,30 @@ const SignUp = () => {
     } catch (error) {
       alert(error.message);
     }
+  }
+  
+  // Function to validate password complexity
+  function isStrongPassword(password) {
+    // Regular expressions for password validation
+    const uppercaseRegex = /[A-Z]/;
+    const lowercaseRegex = /[a-z]/;
+    const numberRegex = /[0-9]/;
+    const specialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/;
+  
+    return (
+      uppercaseRegex.test(password) &&
+      lowercaseRegex.test(password) &&
+      numberRegex.test(password) &&
+      specialCharRegex.test(password)
+    );
+  }
+  
+  
+  // Function to validate email format
+  function isValidEmail(email) {
+    // Regular expression for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   return (
