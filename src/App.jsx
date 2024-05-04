@@ -2,13 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { SignUp, Login, Homepage } from "./pages";
 import { Routes, Route } from "react-router-dom";
+import ReserveSeatsPage from "./pages/ReserveSeatsPage";
 
 const App = () => {
   const [token, setToken] = useState(false);
-
-  if (token) {
-    sessionStorage.setItem("token", JSON.stringify(token));
-  }
 
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
@@ -22,7 +19,8 @@ const App = () => {
       <Routes>
         <Route path={"/signup"} element={<SignUp />} />
         <Route path={"/"} element={<Login setToken={setToken} />} />
-        {token?<Route path={"/homepage"} element={<Homepage token={token} />} />:""}
+        {token && <Route path={"/homepage"} element={<Homepage token={token} />} />}
+        {token && <Route path={"/:eventLocation/:eventId"} element={<ReserveSeatsPage />} />}
       </Routes>
     </div>
   );

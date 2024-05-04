@@ -1,23 +1,38 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../client";
 import "../styling/Homepage.css"; // Import CSS file
 
 const Homepage = ({ token }) => {
+  const [events, setEvents] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const { data: eventsData, error } = await supabase.from("events").select("*");
+      if (error) {
+        throw error;
+      }
+      setEvents(eventsData);
+    } catch (error) {
+      console.error("Error fetching events:", error.message);
+    }
+  };
 
   function handleLogout() {
     sessionStorage.removeItem("token");
     navigate("/");
   }
 
-  // Dummy event data for showcasing
-  const events = [
-    { id: 1, title: "Event 1", date: "2024-05-01", location: "Location 1" },
-    { id: 2, title: "Event 2", date: "2024-05-05", location: "Location 2" },
-    { id: 3, title: "Event 3", date: "2024-05-10", location: "Location 3" },
-  ];
+  const handleReserveSeats = (eventId, eventLocation) => {
+    navigate(`/${eventLocation}/${eventId}`);
+  };
 
   return (
     <div className="homepage-container">
@@ -31,16 +46,18 @@ const Homepage = ({ token }) => {
         <h2>Upcoming Events</h2>
         <ul className="event-list">
           {events.map((event) => (
-            <li key={event.id} className="event-item">
+            <li key={event.event_id} className="event-item">
               <div>
                 <h3>{event.title}</h3>
                 <p>Date: {event.date}</p>
                 <p>Location: {event.location}</p>
+                <button onClick={() => handleReserveSeats(event.event_id, event.location)}>RESERVE SEATS</button>
               </div>
             </li>
           ))}
         </ul>
       </div>
+      
     </div>
   );
 };
