@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../client";
@@ -31,7 +30,7 @@ const Homepage = ({ token }) => {
   }
 
   const handleReserveSeats = (eventId, eventLocation) => {
-    navigate(`/${eventLocation}/${eventId}`);
+    navigate(`/homepage/${eventLocation}/${eventId}`); // Navigate to the desired URL
   };
 
   return (
@@ -57,7 +56,6 @@ const Homepage = ({ token }) => {
           ))}
         </ul>
       </div>
-      
     </div>
   );
 };

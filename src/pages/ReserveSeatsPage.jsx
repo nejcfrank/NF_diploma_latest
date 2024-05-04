@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "../client";
@@ -29,6 +30,7 @@ const ReserveSeatsPage = () => {
   };
 
   // Function to handle seat reservation
+  // eslint-disable-next-line no-unused-vars
   const handleSeatReservation = (seatId) => {
     // Implement seat reservation logic
   };
