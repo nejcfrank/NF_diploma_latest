@@ -28,14 +28,15 @@ const Login = ({ setToken }) => {
         email: formData.email,
         password: formData.password,
       });
-
+  
       if (error) {
         if (error.message === "Invalid login credentials") {
           throw new Error("Invalid email or password. Please try again.");
         }
         throw error;
       }
-
+  
+      sessionStorage.setItem("token", JSON.stringify(data));
       setToken(data);
       navigate("/homepage");
     } catch (error) {

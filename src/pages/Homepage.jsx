@@ -30,7 +30,7 @@ const Homepage = ({ token }) => {
   }
 
   const handleReserveSeats = (eventId, eventLocation) => {
-    navigate(`/homepage/${eventLocation}/${eventId}`); // Navigate to the desired URL
+    navigate(`${eventLocation}/${eventId}`); // Navigate to the desired URL
   };
 
   return (
