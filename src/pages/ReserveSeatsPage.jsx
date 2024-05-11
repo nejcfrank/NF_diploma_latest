@@ -113,9 +113,7 @@ const ReserveSeatsPage = () => {
                   : "unavailable"
               }`}
               onClick={() => toggleSeatSelection(seat.seat_id)}
-            >
-              {seat.seat_number}
-            </div>
+            ></div>
           ))}
         </div>
       </div>

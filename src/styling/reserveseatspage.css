@@ -1,69 +1,65 @@
 .page-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .hall-layout {
-    margin-top: 20px;
-    width: 50%;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .seats-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .seat {
-    width: 20px;
-    height: 23px;
-    background-color: #ccc;
-    border: 1px solid #aaa;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 3px;
-   
-  }
-  
-  
-  .available {
-    background-color: green;
-  }
-  
-  .unavailable {
-    background-color: red;
-  }
-  
-  .selected {
-    background-color: yellow;
-  }
-  
-  .buy-button {
-    margin-top: 30px;
-    padding: 10px 20px;
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition-duration: 0.4s;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  }
-  
-  .buy-button:hover {
-    background-color: #45a049; /* Darker Green */
-    color: white;
-  }
-  
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hall-layout {
+  margin-top: 20px;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+}
+
+.seats-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.seat {
+  width: 15px;
+  height: 20px;
+  background-color: #ccc;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3px;
+}
+
+.available {
+  background-color: green;
+}
+
+.unavailable {
+  background-color: red;
+}
+
+.selected {
+  background-color: yellow;
+}
+
+.buy-button {
+  margin-top: 30px;
+  padding: 10px 20px;
+  background-color: #4caf50; /* Green */
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.buy-button:hover {
+  background-color: #45a049; /* Darker Green */
+  color: white;
+}
