@@ -45,9 +45,10 @@ const ReserveSeatsPage = () => {
 
   const handleSeatUpdate = (payload) => {
     // Update the seat in the local state based on the real-time change
+    const updatedSeat = payload.new;
     setSeats((prevSeats) =>
       prevSeats.map((prevSeat) =>
-        prevSeat.id === payload.new.id ? payload.new : prevSeat
+        prevSeat.seat_id === updatedSeat.seat_id ? updatedSeat : prevSeat
       )
     );
   };
@@ -59,14 +60,12 @@ const ReserveSeatsPage = () => {
         alert("Seat already taken");
         return;
       }
-  
+
       const updatedSeats = seats.map((seat) =>
-        seat.seat_id === seatId
-          ? { ...seat, selected: !seat.selected }
-          : seat
+        seat.seat_id === seatId ? { ...seat, selected: !seat.selected } : seat
       );
       setSeats(updatedSeats);
-  
+
       const selectedSeatIds = updatedSeats
         .filter((seat) => seat.selected)
         .map((seat) => seat.seat_id);
@@ -75,7 +74,6 @@ const ReserveSeatsPage = () => {
       console.error("Error toggling seat selection:", error.message);
     }
   };
-  
 
   const handleBuyButtonClick = async () => {
     try {
@@ -121,7 +119,9 @@ const ReserveSeatsPage = () => {
           ))}
         </div>
       </div>
-      <button className="buy-button" onClick={handleBuyButtonClick}>BUY</button>
+      <button className="buy-button" onClick={handleBuyButtonClick}>
+        BUY
+      </button>
     </div>
   );
 };
