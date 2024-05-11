@@ -56,7 +56,7 @@ const ReserveSeatsPage = () => {
     try {
       const seat = seats.find((seat) => seat.seat_id === seatId);
       if (!seat.availability) {
-        alert("Seat already taken.");
+        alert("Seat already taken");
         return;
       }
   
@@ -100,10 +100,10 @@ const ReserveSeatsPage = () => {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h1>SEATS</h1>
       <div className="hall-layout">
-        <div className="seats">
+        <div className="seats-container">
           {seats.map((seat) => (
             <div
               key={seat.seat_id}
@@ -121,7 +121,7 @@ const ReserveSeatsPage = () => {
           ))}
         </div>
       </div>
-      <button onClick={handleBuyButtonClick}>BUY</button>
+      <button className="buy-button" onClick={handleBuyButtonClick}>BUY</button>
     </div>
   );
 };
