@@ -1,0 +1,32 @@
+/* reserveseatspage.css */
+
+/* Define the width and height of each seat */
+.seat {
+    width: calc((100% - 20px) / 20); /* Adjust width to accommodate space between seats */
+    height: calc((100% - 20px) / 20); /* Set the height to match the width */
+    margin: 3px; /* Add margin for space between seats */
+    border-radius: 50%; /* Make the seat appear as a circle */
+    border: 1px solid #000; /* Add a border */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Adjust the seat grid layout */
+  .seat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Distribute seats evenly */
+  }
+  
+  /* Example seat styles */
+  .available {
+    background-color: green;
+  }
+  
+  .unavailable {
+    background-color: red;
+  }
+  
+  /* Add any other styles you need for the seats */
+  
