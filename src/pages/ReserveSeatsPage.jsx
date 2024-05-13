@@ -7,17 +7,18 @@ const ReserveSeatsPage = () => {
   const { eventId } = useParams();
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const { seatId } = useParams(); // Get seatId from URL parameters
 
   useEffect(() => {
     fetchSeats(); // Fetch seats when component mounts
 
     // Subscribe to real-time changes in the "seats" table
     const seatsSubscription = supabase
-      .channel(`realtime:event_id=${eventId}`)
-      .on("INSERT", handleSeatUpdate)
-      .on("UPDATE", handleSeatUpdate)
-      .on("DELETE", handleSeatUpdate)
-      .subscribe();
+  .channel("seats")
+  .on("INSERT", handleSeatUpdate)
+  .on("UPDATE", handleSeatUpdate)
+  .on("DELETE", handleSeatUpdate)
+  .subscribe();
 
     // Clean up subscription on component unmount
     return () => {
@@ -77,21 +78,46 @@ const ReserveSeatsPage = () => {
 
   const handleBuyButtonClick = async () => {
     try {
-      const { error } = await supabase
+      // Fetch the availability status of selected seats from the server
+      const { data: seatAvailability, error } = await supabase
         .from("seats")
-        .update({ selected: false, availability: false })
+        .select("availability")
         .in("seat_id", selectedSeats);
-
+  
       if (error) {
         throw error;
       }
-
+  
+      // Check if any of the selected seats are already taken
+      const takenSeats = seatAvailability.filter(seat => !seat.availability);
+  
+      if (takenSeats.length > 0) {
+        alert("Sorry, some of the selected seats are already taken.");
+        // Refresh the page to update seat availability
+        fetchSeats();
+        return;
+      }
+  
+      // Proceed with buying the seats
+      const { updateError } = await supabase
+        .from("seats")
+        .update({ selected: false, availability: false, bought_at: new Date() })
+        .in("seat_id", selectedSeats);
+  
+      if (updateError) {
+        throw updateError;
+      }
+  
       // Fetch the updated seats after the buy operation
       fetchSeats();
     } catch (error) {
       console.error("Error processing buy operation:", error.message);
     }
   };
+  
+  
+  
+  
 
   if (seats.length === 0) {
     return <div>Loading...</div>;

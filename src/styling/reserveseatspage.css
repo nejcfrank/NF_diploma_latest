@@ -46,7 +46,7 @@
 .buy-button {
   margin-top: 30px;
   padding: 10px 20px;
-  background-color: #4caf50; /* Green */
+  background-color: #3f51b5; /* Indigo */
   border: none;
   color: white;
   text-align: center;
@@ -60,6 +60,11 @@
 }
 
 .buy-button:hover {
-  background-color: #45a049; /* Darker Green */
-  color: white;
+  background-color: #303f9f; /* Darker Indigo */
+}
+
+h1 {
+  font-size: 36px;
+  color: #3f51b5; /* Indigo */
+  margin-bottom: 20px;
 }
