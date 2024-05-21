@@ -32,15 +32,15 @@
 }
 
 .available {
-  background-color: green;
+  background-color: rgb(22, 214, 22);
 }
 
 .unavailable {
-  background-color: red;
+  background-color: rgb(184, 33, 33);
 }
 
 .selected {
-  background-color: yellow;
+  background-color: rgb(255, 238, 0);
 }
 
 .buy-button {

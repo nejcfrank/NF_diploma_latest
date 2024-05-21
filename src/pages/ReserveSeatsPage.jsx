@@ -7,18 +7,17 @@ const ReserveSeatsPage = () => {
   const { eventId } = useParams();
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const { seatId } = useParams(); // Get seatId from URL parameters
 
   useEffect(() => {
     fetchSeats(); // Fetch seats when component mounts
 
     // Subscribe to real-time changes in the "seats" table
     const seatsSubscription = supabase
-  .channel("seats")
-  .on("INSERT", handleSeatUpdate)
-  .on("UPDATE", handleSeatUpdate)
-  .on("DELETE", handleSeatUpdate)
-  .subscribe();
+      .channel("seats")
+      .on("INSERT", handleSeatUpdate)
+      .on("UPDATE", handleSeatUpdate)
+      .on("DELETE", handleSeatUpdate)
+      .subscribe();
 
     // Clean up subscription on component unmount
     return () => {
@@ -114,10 +113,10 @@ const ReserveSeatsPage = () => {
       console.error("Error processing buy operation:", error.message);
     }
   };
-  
-  
-  
-  
+
+  const handleReserveButtonClick = async () => {
+    // Implement reserve functionality here
+  };
 
   if (seats.length === 0) {
     return <div>Loading...</div>;
@@ -143,9 +142,16 @@ const ReserveSeatsPage = () => {
           ))}
         </div>
       </div>
-      <button className="buy-button" onClick={handleBuyButtonClick}>
-        BUY
-      </button>
+      {selectedSeats.length > 0 && (
+        <button className="buy-button" onClick={handleBuyButtonClick}>
+          BUY
+        </button>
+      )}
+      {selectedSeats.length > 0 && (
+        <button className="reserve-button" onClick={handleReserveButtonClick}>
+          RESERVE
+        </button>
+      )}
     </div>
   );
 };
