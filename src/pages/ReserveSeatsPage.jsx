@@ -97,7 +97,9 @@ const ReserveSeatsPage = () => {
       );
 
       if (takenSeats.length > 0) {
-        alert("Sorry, some of the selected seats are already taken or reserved.");
+        alert(
+          "Sorry, some of the selected seats are already taken or reserved."
+        );
         // Refresh the page to update seat availability
         fetchSeats();
         return;
@@ -138,7 +140,9 @@ const ReserveSeatsPage = () => {
       );
 
       if (takenSeats.length > 0) {
-        alert("Sorry, some of the selected seats are already taken or reserved.");
+        alert(
+          "Sorry, some of the selected seats are already taken or reserved."
+        );
         // Refresh the page to update seat availability
         fetchSeats();
         return;
@@ -150,7 +154,7 @@ const ReserveSeatsPage = () => {
         .update({
           reserved: true,
           reserved_at: new Date(),
-          reservation_expires_at: new Date(Date.now() + 30000), // 30 seconds from now
+          reservation_expires_at: new Date(Date.now() + 58000), // 60 seconds from now
         })
         .in("seat_id", selectedSeats);
 
