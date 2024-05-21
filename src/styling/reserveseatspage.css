@@ -43,6 +43,11 @@
   background-color: rgb(255, 238, 0);
 }
 
+.reserved {
+  background-color: rgb(238, 255, 0);
+  cursor: not-allowed;
+}
+
 .buy-button {
   margin-top: 30px;
   padding: 10px 20px;

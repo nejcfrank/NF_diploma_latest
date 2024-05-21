@@ -19,9 +19,13 @@ const ReserveSeatsPage = () => {
       .on("DELETE", handleSeatUpdate)
       .subscribe();
 
-    // Clean up subscription on component unmount
+    // Periodically fetch the latest seat data
+    const interval = setInterval(fetchSeats, 30000); // Every 30 seconds
+
+    // Clean up subscription and interval on component unmount
     return () => {
       seatsSubscription.unsubscribe();
+      clearInterval(interval);
     };
   }, [eventId]);
 
@@ -56,8 +60,8 @@ const ReserveSeatsPage = () => {
   const toggleSeatSelection = async (seatId) => {
     try {
       const seat = seats.find((seat) => seat.seat_id === seatId);
-      if (!seat.availability) {
-        alert("Seat already taken");
+      if (!seat.availability || seat.reserved) {
+        alert("Seat already taken or reserved");
         return;
       }
 
@@ -80,33 +84,35 @@ const ReserveSeatsPage = () => {
       // Fetch the availability status of selected seats from the server
       const { data: seatAvailability, error } = await supabase
         .from("seats")
-        .select("availability")
+        .select("availability, reserved")
         .in("seat_id", selectedSeats);
-  
+
       if (error) {
         throw error;
       }
-  
-      // Check if any of the selected seats are already taken
-      const takenSeats = seatAvailability.filter(seat => !seat.availability);
-  
+
+      // Check if any of the selected seats are already taken or reserved
+      const takenSeats = seatAvailability.filter(
+        (seat) => !seat.availability || seat.reserved
+      );
+
       if (takenSeats.length > 0) {
-        alert("Sorry, some of the selected seats are already taken.");
+        alert("Sorry, some of the selected seats are already taken or reserved.");
         // Refresh the page to update seat availability
         fetchSeats();
         return;
       }
-  
+
       // Proceed with buying the seats
       const { updateError } = await supabase
         .from("seats")
         .update({ selected: false, availability: false, bought_at: new Date() })
         .in("seat_id", selectedSeats);
-  
+
       if (updateError) {
         throw updateError;
       }
-  
+
       // Fetch the updated seats after the buy operation
       fetchSeats();
     } catch (error) {
@@ -115,7 +121,48 @@ const ReserveSeatsPage = () => {
   };
 
   const handleReserveButtonClick = async () => {
-    // Implement reserve functionality here
+    try {
+      // Fetch the availability status of selected seats from the server
+      const { data: seatAvailability, error } = await supabase
+        .from("seats")
+        .select("availability, reserved")
+        .in("seat_id", selectedSeats);
+
+      if (error) {
+        throw error;
+      }
+
+      // Check if any of the selected seats are already taken or reserved
+      const takenSeats = seatAvailability.filter(
+        (seat) => !seat.availability || seat.reserved
+      );
+
+      if (takenSeats.length > 0) {
+        alert("Sorry, some of the selected seats are already taken or reserved.");
+        // Refresh the page to update seat availability
+        fetchSeats();
+        return;
+      }
+
+      // Proceed with reserving the seats
+      const { error: reserveError } = await supabase
+        .from("seats")
+        .update({
+          reserved: true,
+          reserved_at: new Date(),
+          reservation_expires_at: new Date(Date.now() + 30000), // 30 seconds from now
+        })
+        .in("seat_id", selectedSeats);
+
+      if (reserveError) {
+        throw reserveError;
+      }
+
+      // Fetch the updated seats after the reserve operation
+      fetchSeats();
+    } catch (error) {
+      console.error("Error processing reserve operation:", error.message);
+    }
   };
 
   if (seats.length === 0) {
@@ -133,6 +180,8 @@ const ReserveSeatsPage = () => {
               className={`seat ${
                 seat.selected
                   ? "selected"
+                  : seat.reserved
+                  ? "reserved"
                   : seat.availability
                   ? "available"
                   : "unavailable"
