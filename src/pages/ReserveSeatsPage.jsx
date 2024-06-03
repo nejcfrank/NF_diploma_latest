@@ -8,6 +8,7 @@ const ReserveSeatsPage = () => {
   const { eventId } = useParams();
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0); // State to hold total price
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -21,8 +22,6 @@ const ReserveSeatsPage = () => {
       .on("DELETE", handleSeatUpdate)
       .subscribe();
 
-    startFetchingSeats(); // Start fetching seats at intervals
-
     // Clean up subscription and interval on component unmount
     return () => {
       seatsSubscription.unsubscribe();
@@ -30,14 +29,12 @@ const ReserveSeatsPage = () => {
     };
   }, [eventId]);
 
-  const startFetchingSeats = () => {
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(fetchSeats, 10000); // Fetch every 10 seconds
-  };
-
-  const stopFetchingSeats = () => {
-    clearInterval(intervalRef.current);
-  };
+  useEffect(() => {
+    // Calculate total price whenever selected seats change
+    const pricePerSeat = 10; // Set your price per seat here
+    const totalPrice = selectedSeats.length * pricePerSeat;
+    setTotalPrice(totalPrice);
+  }, [selectedSeats]);
 
   const fetchSeats = async () => {
     try {
@@ -67,16 +64,14 @@ const ReserveSeatsPage = () => {
     fetchSeats(); // Fetch seats after an update
   };
 
-  const toggleSeatSelection = (seatId) => {
-    const seat = seats.find((seat) => seat.seat_id === seatId);
-    if (!seat.availability || seat.reserved) {
-      alert("Seat already taken or reserved");
-      return;
-    }
+  const toggleSeatSelection = async (seatId) => {
+    const seatIndex = seats.findIndex((seat) => seat.seat_id === seatId);
+    if (seatIndex === -1) return; // Seat not found
 
-    const updatedSeats = seats.map((seat) =>
-      seat.seat_id === seatId ? { ...seat, selected: !seat.selected } : seat
-    );
+    const updatedSeats = [...seats];
+    const updatedSeat = { ...updatedSeats[seatIndex] };
+    updatedSeat.selected = !updatedSeat.selected;
+    updatedSeats[seatIndex] = updatedSeat;
     setSeats(updatedSeats);
 
     const selectedSeatIds = updatedSeats
@@ -84,16 +79,25 @@ const ReserveSeatsPage = () => {
       .map((seat) => seat.seat_id);
     setSelectedSeats(selectedSeatIds);
 
-    // Stop fetching seats while making a selection
-    stopFetchingSeats();
+    try {
+      // Update the selected field in the database only if selection status has changed
+      if (updatedSeat.selected !== seats[seatIndex].selected) {
+        await supabase
+          .from("seats")
+          .update({ selected: updatedSeat.selected })
+          .eq("seat_id", seatId);
+      }
+    } catch (error) {
+      console.error("Error updating seat selection:", error.message);
+    }
   };
 
   const handleBuyButtonClick = async () => {
     try {
       // Fetch the availability status of selected seats from the server
-      const { data: seatAvailability, error } = await supabase
+      const { data: seatAvailabilityBefore, error } = await supabase
         .from("seats")
-        .select("availability, reserved")
+        .select("*")
         .in("seat_id", selectedSeats);
 
       if (error) {
@@ -101,7 +105,7 @@ const ReserveSeatsPage = () => {
       }
 
       // Check if any of the selected seats are already taken or reserved
-      const takenSeats = seatAvailability.filter(
+      const takenSeats = seatAvailabilityBefore.filter(
         (seat) => !seat.availability || seat.reserved
       );
 
@@ -110,8 +114,7 @@ const ReserveSeatsPage = () => {
           "Sorry, some of the selected seats are already taken or reserved."
         );
         // Refresh the page to update seat availability
-        fetchSeats();
-        startFetchingSeats(); // Resume fetching seats
+        window.location.reload(); // Refresh the page
         return;
       }
 
@@ -125,6 +128,18 @@ const ReserveSeatsPage = () => {
         throw updateError;
       }
 
+      // Fetch the updated seat data after the purchase
+      const { data: seatAvailabilityAfter, error: fetchError } = await supabase
+        .from("seats")
+        .select("*")
+        .in("seat_id", selectedSeats);
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      console.log("Seat data after purchase:", seatAvailabilityAfter);
+
       // Immediately update the local state to reflect the purchase
       const updatedSeats = seats.map((seat) =>
         selectedSeats.includes(seat.seat_id)
@@ -135,9 +150,10 @@ const ReserveSeatsPage = () => {
       setSelectedSeats([]); // Clear selected seats
 
       // Re-enable the periodic fetching of seats
-      startFetchingSeats();
     } catch (error) {
       console.error("Error processing buy operation:", error.message);
+      // Refresh the page if an error occurs
+      window.location.reload(); // Refresh the page
     }
   };
 
@@ -164,7 +180,7 @@ const ReserveSeatsPage = () => {
         );
         // Refresh the page to update seat availability
         fetchSeats();
-        startFetchingSeats(); // Resume fetching seats
+
         return;
       }
 
@@ -184,9 +200,8 @@ const ReserveSeatsPage = () => {
 
       // Fetch the updated seats after the reserve operation
       fetchSeats();
-      startFetchingSeats(); // Resume fetching seats
 
-      // Set a timeout to fetch seats after 60 seconds
+      // Set a timeout to fetch seats after the reservation expires
       setTimeout(fetchSeats, 60000); // 60 seconds
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
@@ -204,7 +219,7 @@ const ReserveSeatsPage = () => {
       {selectedSeats.length > 0 && (
         <>
           <button className="buy-button" onClick={handleBuyButtonClick}>
-            BUY
+            BUY for {totalPrice}€ {/* Display total price on the button */}
           </button>
           <button className="reserve-button" onClick={handleReserveButtonClick}>
             RESERVE
