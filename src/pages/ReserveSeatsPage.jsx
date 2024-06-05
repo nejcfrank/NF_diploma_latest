@@ -4,16 +4,18 @@ import { supabase } from "../client";
 import SeatsLayout from "./SeatsLayout";
 import "../styling/reserveseatspage.css";
 
-const ReserveSeatsPage = () => {
+const ReserveSeatsPage = ({ token }) => {
   const { eventId } = useParams();
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0); // State to hold total price
   const intervalRef = useRef(null);
 
+
+
+
   useEffect(() => {
     fetchSeats(); // Fetch seats when component mounts
-
     // Subscribe to real-time changes in the "seats" table
     const seatsSubscription = supabase
       .channel("seats")
@@ -68,6 +70,14 @@ const ReserveSeatsPage = () => {
     const seatIndex = seats.findIndex((seat) => seat.seat_id === seatId);
     if (seatIndex === -1) return; // Seat not found
 
+    const selectedSeat = seats[seatIndex];
+    // Check if the seat is already reserved or bought
+    if (selectedSeat.reserved || selectedSeat.bought_at) {
+      alert("Apologies, but this seat has already been sold or reserved.");
+      return; // Do nothing if the seat is reserved or bought
+    }
+
+    // Toggle the selection status of the seat
     const updatedSeats = [...seats];
     const updatedSeat = { ...updatedSeats[seatIndex] };
     updatedSeat.selected = !updatedSeat.selected;
@@ -159,54 +169,83 @@ const ReserveSeatsPage = () => {
 
   const handleReserveButtonClick = async () => {
     try {
-      // Fetch the availability status of selected seats from the server
+      // Filter out previously selected and reserved seats
+      const unreservedSeats = selectedSeats.filter(
+        (seatId) => !seats.find((seat) => seat.seat_id === seatId)?.reserved
+      );
+  
+      // Fetch the availability status of unreserved selected seats from the server
       const { data: seatAvailability, error } = await supabase
         .from("seats")
-        .select("availability, reserved")
-        .in("seat_id", selectedSeats);
-
+        .select("*")
+        .in("seat_id", unreservedSeats);
+  
       if (error) {
         throw error;
       }
-
-      // Check if any of the selected seats are already taken or reserved
+  
+      // Check if any of the unreserved selected seats are already taken or reserved
       const takenSeats = seatAvailability.filter(
         (seat) => !seat.availability || seat.reserved
       );
-
+  
       if (takenSeats.length > 0) {
         alert(
           "Sorry, some of the selected seats are already taken or reserved."
         );
         // Refresh the page to update seat availability
         fetchSeats();
-
+  
         return;
       }
-
-      // Proceed with reserving the seats
-      const { error: reserveError } = await supabase
-        .from("seats")
-        .update({
-          reserved: true,
-          reserved_at: new Date(),
-          reservation_expires_at: new Date(Date.now() + 60000), // 60 seconds from now
-        })
-        .in("seat_id", selectedSeats);
-
-      if (reserveError) {
-        throw reserveError;
+  
+      // Proceed with reserving the unreserved seats
+      const now = new Date();
+  
+      // Check if there are any seats previously reserved by this user
+      const userPreviousReservations = seats.filter(
+        (seat) => seat.reserved && seat.bought_by_user === token.user.user_metadata.full_name
+      );
+  
+      if (userPreviousReservations.length > 0) {
+        // Update reserved_at for previously reserved seats and newly reserved seats
+        const reservePromises = userPreviousReservations.map(async (seat) => {
+          return supabase
+            .from("seats")
+            .update({
+              reserved_at: now,
+            })
+            .eq("seat_id", seat.seat_id);
+        });
+  
+        // Wait for all updates to complete
+        await Promise.all(reservePromises);
       }
-
+  
+      // Update reserved_at for newly reserved seats
+      const reservePromises = unreservedSeats.map(async (seatId) => {
+        return supabase
+          .from("seats")
+          .update({
+            reserved: true,
+            reserved_at: now,
+            bought_by_user: token.user.user_metadata.full_name,
+          })
+          .eq("seat_id", seatId);
+      });
+  
+      // Wait for all updates to complete
+      await Promise.all(reservePromises);
+  
       // Fetch the updated seats after the reserve operation
       fetchSeats();
-
-      // Set a timeout to fetch seats after the reservation expires
-      setTimeout(fetchSeats, 60000); // 60 seconds
+  
+      setTimeout(fetchSeats, 5000); // 60 seconds
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
     }
   };
+  
 
   if (seats.length === 0) {
     return <div>Loading...</div>;

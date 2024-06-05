@@ -5,6 +5,8 @@ import "../styling/reserveseatspage.css";
 const SeatsLayout = ({ seats, toggleSeatSelection }) => {
   // Define the number of seats in each row
   const rowSeatCounts = [24, 28, 28, 30, 30, 31, 30, 28, 25, 20, 19, 16, 25, 20, 19, 16];
+  // Define seat labels (A, B, C, ...)
+  const seatLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   return (
     <div className="page-container">
@@ -19,6 +21,9 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
               }`}
               key={rowIndex}
             >
+              <div className="seat-number">
+                {seatLabels.charAt(rowIndex)}
+              </div> {/* Display seat letter */}
               <div className="seats-row-container">
                 {seats
                   .slice(
@@ -48,6 +53,9 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
         <div className="seats-container">
           {rowSeatCounts.slice(11).map((seatCount, rowIndex) => (
             <div className="seats-row" key={rowIndex + 11}>
+              <div className="seat-number">
+                {seatLabels.charAt(rowIndex + 11)}
+              </div> {/* Display seat letter */}
               <div className="seats-row-container">
                 {seats
                   .slice(

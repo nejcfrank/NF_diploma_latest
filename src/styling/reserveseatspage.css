@@ -110,3 +110,9 @@ h1 {
 .horizontal-gap {
   margin-top: 30px; /* Adjust the horizontal gap as needed */
 }
+
+.seat-number {
+  margin-right: 10px; /* Adjust the space between letter and seat */
+  font-size: 1rem; /* Adjust the font size of the seat letter */
+  margin-top: 0.4rem;
+}
