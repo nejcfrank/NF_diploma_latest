@@ -10,6 +10,8 @@ const ReserveSeatsPage = ({ token }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0); // State to hold total price
   const intervalRef = useRef(null);
+  const [showComponent, setShowComponent] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(60); // Initial remaining time is 60 seconds
 
   useEffect(() => {
     fetchSeats(); // Fetch seats when component mounts
@@ -272,11 +274,17 @@ const ReserveSeatsPage = ({ token }) => {
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
     }
-  };
+    setShowComponent(true);
+    const intervalId = setInterval(() => {
+      setRemainingTime((prevTime) => prevTime - 1);
+    }, 1000); // Update the remaining time every second
 
-  if (seats.length === 0) {
-    return <div>Loading...</div>;
-  }
+    // Set a timeout to close the window after 60 seconds
+    setTimeout(() => {
+      clearInterval(intervalId); // Stop the countdown timer
+      setShowComponent(false); // Close the window
+    }, 60000); // Close the window after 60 seconds
+  };
 
   return (
     <div className="page-container">
@@ -290,6 +298,12 @@ const ReserveSeatsPage = ({ token }) => {
           <button className="reserve-button" onClick={handleReserveButtonClick}>
             RESERVE
           </button>
+          {showComponent && (
+            <div className="corner-component">
+              <p>Reserved for: {remainingTime} seconds</p>
+              <p>I AM WINDOWS</p>
+            </div>
+          )}
         </>
       )}
     </div>
