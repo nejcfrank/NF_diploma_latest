@@ -12,6 +12,7 @@ const ReserveSeatsPage = ({ token }) => {
   const intervalRef = useRef(null);
   const [showComponent, setShowComponent] = useState(false);
   const [remainingTime, setRemainingTime] = useState(60); // Initial remaining time is 60 seconds
+  const [selectedSeatsData, setSelectedSeatsData] = useState([]); // State to hold data for selected seats
 
   useEffect(() => {
     fetchSeats(); // Fetch seats when component mounts
@@ -23,10 +24,14 @@ const ReserveSeatsPage = ({ token }) => {
       .on("DELETE", handleSeatUpdate)
       .subscribe();
 
+
+      const intervalId = setInterval(() => {
+        fetchSeats();
+      }, 5000);
     // Clean up subscription and interval on component unmount
     return () => {
       seatsSubscription.unsubscribe();
-      clearInterval(intervalRef.current);
+      clearInterval(intervalId);
     };
   }, [eventId]);
 
@@ -62,31 +67,54 @@ const ReserveSeatsPage = ({ token }) => {
   const fetchSeats = async () => {
     try {
       const { data, error } = await supabase
-        .from("seats")
-        .select("*")
-        .eq("event_id", eventId)
-        .order("seat_id", { ascending: true }); // Order by seat_id ascending
-
+        .from('seats')
+        .select('*')
+        .eq('event_id', eventId)
+        .order('seat_id', { ascending: true });
+  
       if (error) {
         throw error;
       }
-
+  
       // Preserve the selected state of seats
       const updatedSeats = data.map((seat) => ({
         ...seat,
-        selected: selectedSeats.includes(seat.seat_id),
+        selected: selectedSeatsData.some((selectedSeat) => selectedSeat.seat_id === seat.seat_id),
       }));
-
+  
       setSeats(updatedSeats);
     } catch (error) {
-      console.error("Error fetching seats:", error.message);
+      console.error('Error fetching seats:', error.message);
     }
   };
 
   const handleSeatUpdate = () => {
-    fetchSeats(); // Fetch seats after an update
+    // Fetch only the selected seats and update them
+    const selectedSeatIds = seats.filter((seat) => seat.selected).map((seat) => seat.seat_id);
+    if (selectedSeatIds.length > 0) {
+      fetchSelectedSeats(selectedSeatIds);
+    } else {
+      fetchSeats(); // Fetch all seats if no seats are selected
+    }
   };
-
+  
+  // Fetch selected seats
+  const fetchSelectedSeats = async (selectedSeatIds) => {
+    try {
+      const { data: selectedSeatsData, error } = await supabase
+        .from('seats')
+        .select('*')
+        .in('seat_id', selectedSeatIds);
+  
+      if (error) {
+        throw error;
+      }
+  
+      setSelectedSeatsData(selectedSeatsData); // Update selected seats data
+    } catch (error) {
+      console.error('Error fetching selected seats:', error.message);
+    }
+  };
   const toggleSeatSelection = async (seatId) => {
     const seatIndex = seats.findIndex((seat) => seat.seat_id === seatId);
     if (seatIndex === -1) return; // Seat not found
@@ -208,10 +236,18 @@ const ReserveSeatsPage = ({ token }) => {
         throw error;
       }
 
-      // Check if any of the selected seats are already taken or reserved
       const takenSeats = seatAvailabilityBefore.filter(
         (seat) => !seat.availability || seat.reserved
       );
+
+      if (takenSeats.length > 0) {
+        alert(
+          "Sorry, some of the selected seats are already taken or reserved."
+        );
+        // Refresh the page to update seat availability
+        window.location.reload(); // Refresh the page
+        return;
+      }
 
       const now = new Date();
       const expirationTime = new Date(now.getTime() + 60000); // Expiration time is 1 minute from now
@@ -286,22 +322,65 @@ const ReserveSeatsPage = ({ token }) => {
     }, 60000); // Close the window after 60 seconds
   };
 
+  const handleConfirmOrderButtonClick = async () => {
+    try {
+      // Proceed with confirming the order
+      const { updateError } = await supabase
+        .from("seats")
+        .update({
+          availability: false,
+          bought_at: new Date(),
+          reserved: false,
+          reserved_at: null,
+        })
+        .in("seat_id", selectedSeats);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Fetch the updated seat data after the order confirmation
+      const { data: updatedSeatsData, error: fetchError } = await supabase
+        .from("seats")
+        .select("*")
+        .in("seat_id", selectedSeats);
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      console.log("Seat data after confirming order:", updatedSeatsData);
+
+      // Clear selected seats
+      setSelectedSeats([]);
+
+      // Refresh seats
+      fetchSeats();
+     
+    } catch (error) {
+      console.error("Error processing order confirmation:", error.message);
+    }
+    
+  };
+
   return (
     <div className="page-container">
       <SeatsLayout seats={seats} toggleSeatSelection={toggleSeatSelection} />
       {/* Render buttons if seats are selected */}
       {selectedSeats.length > 0 && (
         <>
-          <button className="buy-button" onClick={handleBuyButtonClick}>
-            BUY for {totalPrice}€ {/* Display total price on the button */}
-          </button>
           <button className="reserve-button" onClick={handleReserveButtonClick}>
             RESERVE
           </button>
           {showComponent && (
             <div className="corner-component">
               <p>Reserved for: {remainingTime} seconds</p>
-              <p>I AM WINDOWS</p>
+              <button
+                className="buy-button"
+                onClick={handleConfirmOrderButtonClick}
+              >
+                CONFIRM ORDER {/* Display total price on the button */}
+              </button>
             </div>
           )}
         </>
