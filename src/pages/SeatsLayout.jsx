@@ -10,6 +10,13 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
 
   return (
     <div className="page-container">
+      <div className="top-left-corner">
+        <p className="upp">SELECTED <div className="square yellow"></div></p>
+        <p className="upp">UNAVAILABLE <div className="square red"></div></p>
+        <p className="upp">AVAILABLE <div className="square green"></div></p>
+        <p>RESERVED<div className="square orange"></div></p>
+        
+      </div>
       <div className="hall-layout">
         <div className="stage">STAGE</div>
         <h6>PARTER</h6>
