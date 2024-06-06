@@ -37,24 +37,25 @@ const ReserveSeatsPage = ({ token }) => {
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      const reservationDetails = JSON.parse(localStorage.getItem('reservation'));
+      const reservationDetails = JSON.parse(
+        localStorage.getItem("reservation")
+      );
       if (reservationDetails) {
         const { expirationTime } = reservationDetails;
         if (new Date().getTime() < expirationTime) {
           // Reservation is active, prompt the user
           event.preventDefault();
-          event.returnValue = ''; // Some browsers require a return value to display the confirmation message
+          event.returnValue = ""; // Some browsers require a return value to display the confirmation message
         }
       }
     };
-  
-    window.addEventListener('beforeunload', handleBeforeUnload);
-  
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-  
 
   const fetchSeats = async () => {
     try {
@@ -87,34 +88,34 @@ const ReserveSeatsPage = ({ token }) => {
   const toggleSeatSelection = async (seatId) => {
     const seatIndex = seats.findIndex((seat) => seat.seat_id === seatId);
     if (seatIndex === -1) return; // Seat not found
-  
+
     const selectedSeat = seats[seatIndex];
-    
+
     // Check if the seat is already reserved, if yes, display a message
     if (selectedSeat.reserved) {
       alert("Apologies, but this seat has already been reserved.");
       fetchSeats(); // Refresh the seats to reflect the current state
       return; // Do nothing further if the seat is already reserved
     }
-  
+
     // Check if the seat is already reserved or bought
     if (selectedSeat.reserved || selectedSeat.bought_at) {
       alert("Apologies, but this seat has already been sold or reserved.");
       return; // Do nothing if the seat is reserved or bought
     }
-  
+
     // Toggle the selection status of the seat
     const updatedSeats = [...seats];
     const updatedSeat = { ...updatedSeats[seatIndex] };
     updatedSeat.selected = !updatedSeat.selected;
     updatedSeats[seatIndex] = updatedSeat;
     setSeats(updatedSeats);
-  
+
     const selectedSeatIds = updatedSeats
       .filter((seat) => seat.selected)
       .map((seat) => seat.seat_id);
     setSelectedSeats(selectedSeatIds);
-  
+
     try {
       // Update the selected field in the database only if selection status has changed
       if (updatedSeat.selected !== seats[seatIndex].selected) {
@@ -127,7 +128,6 @@ const ReserveSeatsPage = ({ token }) => {
       console.error("Error updating seat selection:", error.message);
     }
   };
-  
 
   const handleBuyButtonClick = async () => {
     try {
@@ -210,25 +210,17 @@ const ReserveSeatsPage = ({ token }) => {
       const takenSeats = seatAvailabilityBefore.filter(
         (seat) => !seat.availability || seat.reserved
       );
-      if (takenSeats.length > 0) {
-        alert(
-          "Sorry, some of the selected seats are already taken or reserved."
-        );
-        // Refresh the page to update seat availability
-        window.location.reload(); // Refresh the page
-        return;
-      }
-  
+
       const now = new Date();
       const expirationTime = new Date(now.getTime() + 60000); // Expiration time is 1 minute from now
-  
+
       // Store reservation details in localStorage
       const reservationDetails = {
         seats: selectedSeats,
         expirationTime: expirationTime.getTime(), // Store expiration time as milliseconds
       };
-      localStorage.setItem('reservation', JSON.stringify(reservationDetails));
-  
+      localStorage.setItem("reservation", JSON.stringify(reservationDetails));
+
       // Update reserved_at for newly reserved seats
       const reservePromises = selectedSeats.map(async (seatId) => {
         return supabase
@@ -240,21 +232,23 @@ const ReserveSeatsPage = ({ token }) => {
           })
           .eq("seat_id", seatId);
       });
-  
+
       // Wait for all updates to complete
       await Promise.all(reservePromises);
-  
+
       // Fetch the updated seats after the reserve operation
       fetchSeats();
-  
+
       // Set up timer to check for reservation expiration
       const intervalId = setInterval(() => {
-        const reservationDetails = JSON.parse(localStorage.getItem('reservation'));
+        const reservationDetails = JSON.parse(
+          localStorage.getItem("reservation")
+        );
         if (reservationDetails) {
           const { expirationTime } = reservationDetails;
           if (new Date().getTime() >= expirationTime) {
             // Reservation has expired, clear reservation details and update seat status
-            localStorage.removeItem('reservation');
+            localStorage.removeItem("reservation");
             // Update reserved_at and bought_by_user to null for expired reservations
             const expirePromises = selectedSeats.map(async (seatId) => {
               return supabase
@@ -275,14 +269,10 @@ const ReserveSeatsPage = ({ token }) => {
           }
         }
       }, 1000); // Check every second for expiration
-  
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
     }
   };
-  
-
-  
 
   if (seats.length === 0) {
     return <div>Loading...</div>;
