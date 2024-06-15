@@ -23,18 +23,26 @@ const ReserveSeatsPage = ({ token }) => {
       .on("DELETE", handleSeatUpdate)
       .subscribe();
 
-    // Retrieve remaining time from localStorage
+    const storedReservation = JSON.parse(localStorage.getItem("reservation"));
     const storedTime = localStorage.getItem("remainingTime");
-    if (storedTime) {
-      const timeLeft = parseInt(storedTime, 10);
+
+    if (storedReservation && storedTime) {
+      const timeLeft = Math.ceil(
+        (storedReservation.expirationTime - Date.now()) / 1000
+      );
+
       if (timeLeft > 0) {
         setRemainingTime(timeLeft);
         startTimer(timeLeft);
+        setShowComponent(true);
+      } else {
+        handleReservationExpiration();
       }
     }
 
     return () => {
       seatsSubscription.unsubscribe();
+      clearInterval(timerId); // Clear any existing timers on unmount
     };
   }, [eventId]);
 
@@ -50,13 +58,12 @@ const ReserveSeatsPage = ({ token }) => {
         .from("seats")
         .select("*")
         .eq("event_id", eventId)
-        .order("seat_id", { ascending: true }); // Order by seat_id ascending
+        .order("seat_id", { ascending: true });
 
       if (error) {
         throw error;
       }
 
-      // Preserve the selected state of seats
       const updatedSeats = data.map((seat) => ({
         ...seat,
         selected: selectedSeats.includes(seat.seat_id),
@@ -78,13 +85,11 @@ const ReserveSeatsPage = ({ token }) => {
 
     const selectedSeat = seats[seatIndex];
 
-    // Check if the seat is already reserved or bought
     if (selectedSeat.reserved || selectedSeat.bought_at) {
-      alert("Apologies, but this seat has already been sold or reserved.");
+      alert("This seat has already been sold or reserved.");
       return;
     }
 
-    // Toggle the selection status of the seat
     const updatedSeats = [...seats];
     const updatedSeat = { ...updatedSeats[seatIndex] };
     updatedSeat.selected = !updatedSeat.selected;
@@ -97,31 +102,59 @@ const ReserveSeatsPage = ({ token }) => {
     setSelectedSeats(selectedSeatIds);
 
     try {
-      if (updatedSeat.selected !== seats[seatIndex].selected) {
-        await supabase
-          .from("seats")
-          .update({ selected: updatedSeat.selected })
-          .eq("seat_id", seatId);
-      }
+      await supabase
+        .from("seats")
+        .update({ selected: updatedSeat.selected })
+        .eq("seat_id", seatId);
     } catch (error) {
       console.error("Error updating seat selection:", error.message);
     }
   };
 
   const handleReserveButtonClick = async () => {
+    
     try {
+      const { data: reservedSeats, error } = await supabase
+        .from("seats")
+        .select("seat_id")
+        .in("seat_id", selectedSeats)
+        .eq("reserved", true);
+  
+      if (error) {
+        throw error;
+      }
+  
+      if (reservedSeats.length > 0) {
+        alert("One or more of the selected seats are already reserved.");
+        return;
+      }
+      
       const now = new Date();
-      const expirationTime = now.getTime() + 60000; // Expiration time is 1 minute from now
-
-      // Clear previous reservation timer
-      clearInterval(timerId);
-
+      const expirationTime = now.getTime() + 60000; // 1 minute from now
+  
+      const storedReservation = JSON.parse(
+        localStorage.getItem("reservation")
+      ) || { seats: [] };
+  
+      if (storedReservation.seats.length > 0) {
+        const updateReservedAtPromises = storedReservation.seats.map(
+          async (seatId) => {
+            return supabase
+              .from("seats")
+              .update({ reserved_at: now })
+              .eq("seat_id", seatId);
+          }
+        );
+        await Promise.all(updateReservedAtPromises);
+      }
+      
+  
       const reservationDetails = {
-        seats: selectedSeats,
+        seats: [...new Set([...storedReservation.seats, ...selectedSeats])],
         expirationTime,
       };
       localStorage.setItem("reservation", JSON.stringify(reservationDetails));
-
+  
       const reservePromises = selectedSeats.map(async (seatId) => {
         return supabase
           .from("seats")
@@ -129,28 +162,36 @@ const ReserveSeatsPage = ({ token }) => {
             reserved: true,
             reserved_at: now,
             bought_by_user: token.user.user_metadata.full_name,
+            selected: false,
           })
           .eq("seat_id", seatId);
       });
-
+  
       await Promise.all(reservePromises);
-
-      // Update local seat state
+  
       const updatedSeats = seats.map((seat) =>
-        selectedSeats.includes(seat.seat_id)
-          ? { ...seat, reserved: true }
+        reservationDetails.seats.includes(seat.seat_id)
+          ? { ...seat, reserved: true, reserved_at: now, selected: false }
           : seat
       );
       setSeats(updatedSeats);
-
-      startTimer(60); // Start the timer for 60 seconds
-
-      // Set showComponent to true in localStorage
+      setSelectedSeats([]);
+  
+      if (timerId) {
+        clearInterval(timerId); // Clear previous timer
+      }
+      startTimer(60); // Start or restart timer for 60 seconds
+  
       localStorage.setItem("showComponent", "true");
+      setShowComponent(true);
+  
+      // Reload the page after making a reservation
+      
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
     }
   };
+  
 
   const startTimer = (initialTime) => {
     let timeLeft = initialTime;
@@ -160,7 +201,7 @@ const ReserveSeatsPage = ({ token }) => {
       setRemainingTime(timeLeft);
       localStorage.setItem("remainingTime", timeLeft);
 
-      console.log(`Remaining time: ${timeLeft} seconds`);
+      console.log(`Remaining time: ${timeLeft} seconds`); // Log remaining time
 
       if (timeLeft <= 0) {
         clearInterval(intervalId);
@@ -168,7 +209,6 @@ const ReserveSeatsPage = ({ token }) => {
       }
     }, 1000);
 
-    // Save the interval ID in state
     setTimerId(intervalId);
   };
 
@@ -177,7 +217,7 @@ const ReserveSeatsPage = ({ token }) => {
       const reservationDetails = JSON.parse(
         localStorage.getItem("reservation")
       );
-      const expiredSeats = reservationDetails.seats;
+      const expiredSeats = reservationDetails ? reservationDetails.seats : [];
 
       const expirePromises = expiredSeats.map(async (seatId) => {
         return supabase
@@ -203,6 +243,11 @@ const ReserveSeatsPage = ({ token }) => {
 
   const handleConfirmOrderButtonClick = async () => {
     try {
+      const reservationDetails = JSON.parse(
+        localStorage.getItem("reservation")
+      );
+      const seatsToBuy = reservationDetails ? reservationDetails.seats : [];
+
       const { updateError } = await supabase
         .from("seats")
         .update({
@@ -211,7 +256,7 @@ const ReserveSeatsPage = ({ token }) => {
           reserved: false,
           reserved_at: null,
         })
-        .in("seat_id", selectedSeats);
+        .in("seat_id", seatsToBuy);
 
       if (updateError) {
         throw updateError;
@@ -220,7 +265,7 @@ const ReserveSeatsPage = ({ token }) => {
       const { data: updatedSeatsData, error: fetchError } = await supabase
         .from("seats")
         .select("*")
-        .in("seat_id", selectedSeats);
+        .in("seat_id", seatsToBuy);
 
       if (fetchError) {
         throw fetchError;
