@@ -15,11 +15,10 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
         <p className="upp">UNAVAILABLE <div className="square red"></div></p>
         <p className="upp">AVAILABLE <div className="square green"></div></p>
         <p>RESERVED<div className="square orange"></div></p>
-        
       </div>
       <div className="hall-layout">
         <div className="stage">STAGE</div>
-        <h6>PARTER</h6>
+        <h6 className="parter">PARTER</h6>
         <div className="seats-container">
           {rowSeatCounts.slice(0, 11).map((seatCount, rowIndex) => (
             <div

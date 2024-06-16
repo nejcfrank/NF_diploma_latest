@@ -282,28 +282,23 @@ const ReserveSeatsPage = ({ token }) => {
     }
   };
 
+  
+
   return (
-    <div className="page-container">
-      <SeatsLayout seats={seats} toggleSeatSelection={toggleSeatSelection} />
-      {selectedSeats.length > 0 && (
-        <>
-          <button className="reserve-button" onClick={handleReserveButtonClick}>
-            RESERVE
-          </button>
-          {showComponent && (
-            <div className="corner-component">
-              <p>Reserved for: {remainingTime} seconds</p>
-              <button
-                className="buy-button"
-                onClick={handleConfirmOrderButtonClick}
-              >
-                CONFIRM ORDER
-              </button>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+    <>
+      <div className="background-container"></div>
+      <div className="page-container">
+        <SeatsLayout seats={seats} toggleSeatSelection={toggleSeatSelection} />
+        {selectedSeats.length > 0 && (
+          <>
+            <button className="reserve-button" onClick={handleReserveButtonClick}>
+              RESERVE
+            </button>
+            {/* Corner component */}
+          </>
+        )}
+      </div>
+    </>
   );
 };
 

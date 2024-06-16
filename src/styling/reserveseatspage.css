@@ -1,7 +1,23 @@
 /* reserveseatspage.css */
+
+.background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../image/background.jpg'); /* Adjust the path as needed */
+  background-size: cover;
+  background-position: center;
+  filter: blur(6px); /* Add blur effect to the background */
+  z-index: -1; /* Ensure the background stays behind other content */
+}
+
 .page-container {
+  position: relative; /* Ensure other elements respect the stacking context */
   width: 800px;
   margin: 0 auto;
+  z-index: 1; /* Keep main content above background */
 }
 
 .top-left-corner {
@@ -10,6 +26,7 @@
   align-items: flex-start;
   margin-bottom: -150px;
   margin-left: -400px;
+  color: white; /* Set text color */
 }
 
 .square {
@@ -54,12 +71,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: white; /* Set text color */
 }
 
 .stage {
-  width: 400px;
+  width: 600px;
   height: 70px;
-  background-color: #3f51b5;
+  background-color: #bd1c1c; /* Changed background color to blue */
+  color: white; /* Text color */
+  font-weight:bold;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,12 +88,49 @@
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* Adding shadow for a modern look */
 }
 
+.parter {
+  font-size: 24px; /* Increased font size */
+  font-weight: bold; /* Bold font */
+  color: white; /* Text color */
+  margin-bottom: 40px;
+  
+}
+
+.balkon {
+  font-size: 24px; /* Increased font size */
+  font-weight: bold; /* Bold font */
+  color: white; /* Text color */
+  margin-top: 30px; /* Adjust margin as needed */
+  margin-bottom: 40px;
+  
+}
+
 .seats-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
   margin-top: -30px;
+}
+
+.seats-row {
+  display: flex;
+}
+
+.seats-row-container {
+  display: flex;
+}
+
+.horizontal-gap {
+  margin-top: 30px; /* Adjust the horizontal gap as needed */
+}
+
+.seat-number {
+  margin-right: 10px; /* Adjust the space between letter and seat */
+  font-size: 1rem; /* Adjust the font size of the seat letter */
+  font-weight: bold; /* Bold font */
+  color: white; /* Text color */
+  margin-top: 0.4rem;
 }
 
 .seat {
@@ -109,7 +166,7 @@
 .buy-button,
 .reserve-button {
   padding: 10px 20px;
-  background-color: #3f51b5;
+  background-color: #bd1c1c;
   border: none;
   color: white;
   text-align: center;
@@ -142,24 +199,6 @@ h1 {
   text-align: center;
 }
 
-.seats-row {
-  display: flex;
-}
-
-.seats-row-container {
-  display: flex;
-}
-
-.horizontal-gap {
-  margin-top: 30px; /* Adjust the horizontal gap as needed */
-}
-
-.seat-number {
-  margin-right: 10px; /* Adjust the space between letter and seat */
-  font-size: 1rem; /* Adjust the font size of the seat letter */
-  margin-top: 0.4rem;
-}
-
 .corner-component {
   position: fixed;
   top: 10px;
@@ -169,4 +208,15 @@ h1 {
   border: 1px solid black;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+
+.reservation-timer-container {
+  position: fixed;
+  top: 20px; /* Adjust as needed to position the timer */
+  right: 20px; /* Adjust as needed to position the timer */
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
