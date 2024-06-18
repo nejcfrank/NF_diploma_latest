@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "../client";
 import SeatsLayout from "./SeatsLayout";
+import ReservationTimer from "./ReservationTimer"; // Import the ReservationTimer component
 import "../styling/reserveseatspage.css";
 
 const ReserveSeatsPage = ({ token }) => {
@@ -85,57 +86,68 @@ const ReserveSeatsPage = ({ token }) => {
 
     const selectedSeat = seats[seatIndex];
 
-    if (selectedSeat.reserved || selectedSeat.bought_at) {
-      alert("This seat has already been sold or reserved.");
+    if (
+      selectedSeat.reserved ||
+      selectedSeat.bought_at ||
+      !selectedSeat.availability
+    ) {
+      alert("This seat has already been sold, reserved, or is unavailable.");
       return;
     }
 
     const updatedSeats = [...seats];
-    const updatedSeat = { ...updatedSeats[seatIndex] };
-    updatedSeat.selected = !updatedSeat.selected;
-    updatedSeats[seatIndex] = updatedSeat;
+    updatedSeats[seatIndex] = {
+      ...updatedSeats[seatIndex],
+      selected: !selectedSeat.selected,
+    };
+
     setSeats(updatedSeats);
 
     const selectedSeatIds = updatedSeats
       .filter((seat) => seat.selected)
       .map((seat) => seat.seat_id);
-    setSelectedSeats(selectedSeatIds);
 
-    try {
-      await supabase
-        .from("seats")
-        .update({ selected: updatedSeat.selected })
-        .eq("seat_id", seatId);
-    } catch (error) {
-      console.error("Error updating seat selection:", error.message);
-    }
+    setSelectedSeats(selectedSeatIds);
   };
 
   const handleReserveButtonClick = async () => {
-    
     try {
-      const { data: reservedSeats, error } = await supabase
+      const { data: reservedSeats, error: reservedError } = await supabase
         .from("seats")
         .select("seat_id")
         .in("seat_id", selectedSeats)
         .eq("reserved", true);
-  
-      if (error) {
-        throw error;
+
+      if (reservedError) {
+        throw reservedError;
       }
-  
-      if (reservedSeats.length > 0) {
-        alert("One or more of the selected seats are already reserved.");
+
+      const { data: unavailableSeats, error: availabilityError } =
+        await supabase
+          .from("seats")
+          .select("seat_id")
+          .in("seat_id", selectedSeats)
+          .eq("availability", false);
+
+      if (availabilityError) {
+        throw availabilityError;
+      }
+
+      if (reservedSeats.length > 0 || unavailableSeats.length > 0) {
+        alert(
+          "One or more of the selected seats are already reserved or unavailable."
+        );
+        window.location.reload();
         return;
       }
-      
+
       const now = new Date();
       const expirationTime = now.getTime() + 60000; // 1 minute from now
-  
+
       const storedReservation = JSON.parse(
         localStorage.getItem("reservation")
       ) || { seats: [] };
-  
+
       if (storedReservation.seats.length > 0) {
         const updateReservedAtPromises = storedReservation.seats.map(
           async (seatId) => {
@@ -147,14 +159,13 @@ const ReserveSeatsPage = ({ token }) => {
         );
         await Promise.all(updateReservedAtPromises);
       }
-      
-  
+
       const reservationDetails = {
         seats: [...new Set([...storedReservation.seats, ...selectedSeats])],
         expirationTime,
       };
       localStorage.setItem("reservation", JSON.stringify(reservationDetails));
-  
+
       const reservePromises = selectedSeats.map(async (seatId) => {
         return supabase
           .from("seats")
@@ -166,9 +177,9 @@ const ReserveSeatsPage = ({ token }) => {
           })
           .eq("seat_id", seatId);
       });
-  
+
       await Promise.all(reservePromises);
-  
+
       const updatedSeats = seats.map((seat) =>
         reservationDetails.seats.includes(seat.seat_id)
           ? { ...seat, reserved: true, reserved_at: now, selected: false }
@@ -176,22 +187,18 @@ const ReserveSeatsPage = ({ token }) => {
       );
       setSeats(updatedSeats);
       setSelectedSeats([]);
-  
+
       if (timerId) {
         clearInterval(timerId); // Clear previous timer
       }
       startTimer(60); // Start or restart timer for 60 seconds
-  
+
       localStorage.setItem("showComponent", "true");
       setShowComponent(true);
-  
-      // Reload the page after making a reservation
-      
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
     }
   };
-  
 
   const startTimer = (initialTime) => {
     let timeLeft = initialTime;
@@ -271,18 +278,15 @@ const ReserveSeatsPage = ({ token }) => {
         throw fetchError;
       }
 
-      console.log("Seat data after confirming order:", updatedSeatsData);
-
-      setSelectedSeats([]);
-      fetchSeats();
+      setSeats(updatedSeatsData);
       localStorage.removeItem("reservation");
       localStorage.removeItem("remainingTime");
+      setShowComponent(false);
     } catch (error) {
-      console.error("Error processing order confirmation:", error.message);
+      console.error("Error confirming order:", error.message);
     }
+    window.location.reload();
   };
-
-  
 
   return (
     <>
@@ -291,11 +295,21 @@ const ReserveSeatsPage = ({ token }) => {
         <SeatsLayout seats={seats} toggleSeatSelection={toggleSeatSelection} />
         {selectedSeats.length > 0 && (
           <>
-            <button className="reserve-button" onClick={handleReserveButtonClick}>
+            <button
+              className="reserve-button"
+              onClick={handleReserveButtonClick}
+            >
               RESERVE
             </button>
-            {/* Corner component */}
           </>
+        )}
+        {showComponent && (
+          <ReservationTimer
+            remainingTime={remainingTime}
+            handleConfirmOrderButtonClick={handleConfirmOrderButtonClick}
+            
+            
+          />
         )}
       </div>
     </>

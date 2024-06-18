@@ -1,5 +1,3 @@
-/* reserveseatspage.css */
-
 .background-container {
   position: fixed;
   top: 0;
@@ -93,7 +91,6 @@
   font-weight: bold; /* Bold font */
   color: white; /* Text color */
   margin-bottom: 40px;
-  
 }
 
 .balkon {
@@ -102,7 +99,6 @@
   color: white; /* Text color */
   margin-top: 30px; /* Adjust margin as needed */
   margin-bottom: 40px;
-  
 }
 
 .seats-container {
@@ -201,22 +197,34 @@ h1 {
 
 .corner-component {
   position: fixed;
-  top: 10px;
-  right: 10px;
+  top: 20px;
+  right: 20px;
   background-color: white;
-  padding: 10px;
+  padding: 20px;
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-
 .reservation-timer-container {
   position: fixed;
-  top: 20px; /* Adjust as needed to position the timer */
-  right: 20px; /* Adjust as needed to position the timer */
+  top: 20px;
+  right: 20px;
   background-color: white;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 10; /* Ensure the timer is above other content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #333;
+}
+
+.timer {
+  font-size: 20px; 
+  font-weight: bold;
+  color: red;
+  
 }
