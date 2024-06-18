@@ -9,6 +9,7 @@ const ReserveSeatsPage = ({ token }) => {
   const { eventId } = useParams();
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [reservedSeats, setReservedSeats] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [showComponent, setShowComponent] = useState(false);
   const [remainingTime, setRemainingTime] = useState(60);
@@ -36,6 +37,7 @@ const ReserveSeatsPage = ({ token }) => {
         setRemainingTime(timeLeft);
         startTimer(timeLeft);
         setShowComponent(true);
+        setReservedSeats(storedReservation.seats); // Update reserved seats state
       } else {
         handleReservationExpiration();
       }
@@ -187,6 +189,7 @@ const ReserveSeatsPage = ({ token }) => {
       );
       setSeats(updatedSeats);
       setSelectedSeats([]);
+      setReservedSeats(reservationDetails.seats); // Update reserved seats state
 
       if (timerId) {
         clearInterval(timerId); // Clear previous timer
@@ -246,6 +249,7 @@ const ReserveSeatsPage = ({ token }) => {
       console.error("Error handling reservation expiration:", error.message);
     }
     setShowComponent(false);
+    window.location.reload();
   };
 
   const handleConfirmOrderButtonClick = async () => {
@@ -285,7 +289,7 @@ const ReserveSeatsPage = ({ token }) => {
     } catch (error) {
       console.error("Error confirming order:", error.message);
     }
-    window.location.reload();
+    window.location.reload(); // Refresh the page after confirming the order
   };
 
   return (
@@ -306,9 +310,8 @@ const ReserveSeatsPage = ({ token }) => {
         {showComponent && (
           <ReservationTimer
             remainingTime={remainingTime}
+            reservedSeats={reservedSeats} // Pass reserved seats to ReservationTimer
             handleConfirmOrderButtonClick={handleConfirmOrderButtonClick}
-            
-            
           />
         )}
       </div>

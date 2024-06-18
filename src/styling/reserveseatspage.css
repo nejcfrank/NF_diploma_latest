@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('../image/background.jpg'); /* Adjust the path as needed */
+  background-image: url("../image/background.jpg"); /* Adjust the path as needed */
   background-size: cover;
   background-position: center;
   filter: blur(6px); /* Add blur effect to the background */
@@ -75,15 +75,14 @@
 .stage {
   width: 600px;
   height: 70px;
-  background-color: #bd1c1c; /* Changed background color to blue */
+  background-color: #bd1c1c; /* Updated to a shade of blue */
   color: white; /* Text color */
-  font-weight:bold;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: -20px;
   border-radius: 10px;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* Adding shadow for a modern look */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Updated box-shadow for a softer effect */
+  font-size: 40px;
 }
 
 .parter {
@@ -126,7 +125,7 @@
   font-size: 1rem; /* Adjust the font size of the seat letter */
   font-weight: bold; /* Bold font */
   color: white; /* Text color */
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
 }
 
 .seat {
@@ -157,10 +156,10 @@
 .reserved {
   background-color: rgb(255, 123, 0);
   cursor: not-allowed;
+  
 }
 
-.buy-button,
-.reserve-button {
+.confirm-order-button {
   padding: 10px 20px;
   background-color: #bd1c1c;
   border: none;
@@ -176,9 +175,25 @@
   margin: 20px auto; /* Center the button and add spacing */
 }
 
-.buy-button:hover,
+.reserve-button {
+  padding: 10px 50px;
+  background-color: #bd1c1c;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  box-shadow: 0 4px 8px 0 rgba(255, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin: 30px auto; /* Center the button and add spacing */
+}
+
+.confirm-order-button:hover,
 .reserve-button:hover {
-  background-color: #303f9f;
+  background-color: #ff000081;
 }
 
 .buttons-container {
@@ -204,6 +219,7 @@ h1 {
   border: 1px solid black;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
 }
 
 .reservation-timer-container {
@@ -223,8 +239,12 @@ h1 {
 }
 
 .timer {
-  font-size: 20px; 
+  font-size: 20px;
   font-weight: bold;
   color: red;
-  
+}
+
+.total-price {
+  margin-bottom: 30px;
+  margin-top: 10px;
 }

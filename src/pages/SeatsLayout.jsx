@@ -4,17 +4,27 @@ import "../styling/reserveseatspage.css";
 
 const SeatsLayout = ({ seats, toggleSeatSelection }) => {
   // Define the number of seats in each row
-  const rowSeatCounts = [24, 28, 28, 30, 30, 31, 30, 28, 25, 20, 19, 16, 25, 20, 19, 16];
+  const rowSeatCounts = [
+    24, 28, 28, 30, 30, 31, 30, 28, 25, 20, 19, 16, 25, 20, 19, 16,
+  ];
   // Define seat labels (A, B, C, ...)
   const seatLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   return (
     <div className="page-container">
       <div className="top-left-corner">
-        <p className="upp">SELECTED <div className="square yellow"></div></p>
-        <p className="upp">UNAVAILABLE <div className="square red"></div></p>
-        <p className="upp">AVAILABLE <div className="square green"></div></p>
-        <p>RESERVED<div className="square orange"></div></p>
+        <p className="upp">
+          SELECTED <div className="square yellow"></div>
+        </p>
+        <p className="upp">
+          UNAVAILABLE <div className="square red"></div>
+        </p>
+        <p className="upp">
+          AVAILABLE <div className="square green"></div>
+        </p>
+        <p>
+          RESERVED<div className="square orange"></div>
+        </p>
       </div>
       <div className="hall-layout">
         <div className="stage">STAGE</div>
@@ -22,19 +32,18 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
         <div className="seats-container">
           {rowSeatCounts.slice(0, 11).map((seatCount, rowIndex) => (
             <div
-              className={`seats-row ${
-                rowIndex === 5 ? "horizontal-gap" : ""
-              }`}
+              className={`seats-row ${rowIndex === 5 ? "horizontal-gap" : ""}`}
               key={rowIndex}
             >
-              <div className="seat-number">
-                {seatLabels.charAt(rowIndex)}
-              </div> {/* Display seat letter */}
+              <div className="seat-number">{seatLabels.charAt(rowIndex)}</div>{" "}
+              {/* Display seat letter */}
               <div className="seats-row-container">
                 {seats
                   .slice(
                     rowSeatCounts.slice(0, rowIndex).reduce((a, b) => a + b, 0),
-                    rowSeatCounts.slice(0, rowIndex + 1).reduce((a, b) => a + b, 0)
+                    rowSeatCounts
+                      .slice(0, rowIndex + 1)
+                      .reduce((a, b) => a + b, 0)
                   )
                   .map((seat) => (
                     <div
@@ -61,12 +70,17 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
             <div className="seats-row" key={rowIndex + 11}>
               <div className="seat-number">
                 {seatLabels.charAt(rowIndex + 11)}
-              </div> {/* Display seat letter */}
+              </div>{" "}
+              {/* Display seat letter */}
               <div className="seats-row-container">
                 {seats
                   .slice(
-                    rowSeatCounts.slice(0, rowIndex + 11).reduce((a, b) => a + b, 0),
-                    rowSeatCounts.slice(0, rowIndex + 12).reduce((a, b) => a + b, 0)
+                    rowSeatCounts
+                      .slice(0, rowIndex + 11)
+                      .reduce((a, b) => a + b, 0),
+                    rowSeatCounts
+                      .slice(0, rowIndex + 12)
+                      .reduce((a, b) => a + b, 0)
                   )
                   .map((seat) => (
                     <div
