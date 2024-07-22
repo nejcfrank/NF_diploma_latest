@@ -142,22 +142,22 @@
 }
 
 .available {
-  background-color: rgb(22, 214, 22);
+  background-color: rgb(22, 214, 22); /* Green for available seats */
 }
 
 .unavailable {
-  background-color: rgb(184, 33, 33);
+  background-color: rgb(184, 33, 33); /* Red for unavailable seats */
 }
 
 .selected {
-  background-color: rgb(255, 238, 0);
+  background-color: rgb(255, 238, 0); /* Yellow for selected seats */
 }
 
 .reserved {
-  background-color: rgb(255, 123, 0);
+  background-color: rgb(255, 123, 0); /* Orange for reserved seats */
   cursor: not-allowed;
-  
 }
+
 
 .confirm-order-button {
   padding: 10px 20px;
