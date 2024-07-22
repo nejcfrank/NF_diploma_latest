@@ -33,6 +33,12 @@
   margin-right: 20px;
   border: solid;
 }
+.myselection{
+  background-color: rgb(255, 238, 0);
+  border: 3px solid rgb(255, 0, 0);
+  margin-top: -18px;
+  margin-left: -30px;
+}
 
 .yellow {
   background-color: rgb(255, 238, 0);
@@ -156,6 +162,12 @@
 .reserved {
   background-color: rgb(255, 123, 0); /* Orange for reserved seats */
   cursor: not-allowed;
+}
+
+.seat.user-selection {
+  border: 2px solid rgb(255, 0, 0); /* Border color for the user's selection */
+  background-color: yellow;
+  box-shadow: 0 0 10px rgba(255, 0, 0); /* Glow effect for the user's selection */
 }
 
 

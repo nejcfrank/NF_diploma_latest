@@ -83,6 +83,7 @@ const ReserveSeatsPage = ({ token }) => {
         ...seat,
         selected: seat.selected || false, // Ensure selected state is handled
         highlight: seat.reserved || seat.selected, // Define highlight logic if needed
+        isUserSelection: seat.selected && seat.interaction_made_by_user === token.user.user_metadata.sub, // Determine if the seat is the user's selection
       }));
   
       setSeats(updatedSeats);
@@ -128,6 +129,7 @@ const ReserveSeatsPage = ({ token }) => {
       ...updatedSeats[seatIndex],
       selected: newSelectedStatus,
       interaction_made_by_user: newSelectedStatus ? token.user.user_metadata.sub : null, // Set interaction_made_by_user only when selecting
+      isUserSelection: newSelectedStatus, // Set isUserSelection based on the selection status
     };
   
     setSeats(updatedSeats);
@@ -161,22 +163,33 @@ const ReserveSeatsPage = ({ token }) => {
 
   const handleReserveButtonClick = async () => {
     try {
-      // Check if any of the selected seats are already reserved
+      // Filter out seats selected by other users
+      const userSelectedSeats = selectedSeats.filter((seatId) => {
+        const seat = seats.find((s) => s.seat_id === seatId);
+        return seat && seat.isUserSelection;
+      });
+  
+      if (userSelectedSeats.length === 0) {
+        alert("No seats selected by you to reserve.");
+        return;
+      }
+  
+      // Check if any of the user-selected seats are already reserved
       const { data: reservedSeats, error: reservedError } = await supabase
         .from("seats")
         .select("seat_id")
-        .in("seat_id", selectedSeats)
+        .in("seat_id", userSelectedSeats)
         .eq("reserved", true);
   
       if (reservedError) {
         throw reservedError;
       }
   
-      // Check if any of the selected seats are unavailable
+      // Check if any of the user-selected seats are unavailable
       const { data: unavailableSeats, error: availabilityError } = await supabase
         .from("seats")
         .select("seat_id")
-        .in("seat_id", selectedSeats)
+        .in("seat_id", userSelectedSeats)
         .eq("availability", false);
   
       if (availabilityError) {
@@ -184,7 +197,7 @@ const ReserveSeatsPage = ({ token }) => {
       }
   
       // If any seats are unavailable or already reserved, show an alert and exit
-      if (unavailableSeats.length > 0) {
+      if (unavailableSeats.length > 0 || reservedSeats.length > 0) {
         alert("One or more of the selected seats are already reserved or unavailable.");
         return;
       }
@@ -208,13 +221,13 @@ const ReserveSeatsPage = ({ token }) => {
   
       // Update reservation details
       const reservationDetails = {
-        seats: [...new Set([...storedReservation.seats, ...selectedSeats])],
+        seats: [...new Set([...storedReservation.seats, ...userSelectedSeats])],
         expirationTime,
       };
       localStorage.setItem("reservation", JSON.stringify(reservationDetails));
   
       // Reserve the selected seats
-      const reservePromises = selectedSeats.map(seatId => {
+      const reservePromises = userSelectedSeats.map(seatId => {
         return supabase
           .from("seats")
           .update({
@@ -250,6 +263,7 @@ const ReserveSeatsPage = ({ token }) => {
       console.error("Error processing reserve operation:", error.message);
     }
   };
+  
   
   
 

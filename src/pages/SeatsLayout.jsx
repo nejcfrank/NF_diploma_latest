@@ -14,7 +14,10 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
     <div className="page-container">
       <div className="top-left-corner">
         <p className="upp">
-          SELECTED <div className="square yellow"></div>
+          SELECTED BY ME <div className="square myselection"></div>
+        </p>
+        <p className="upp">
+          SELECTED BY OTHER USER <div className="square yellow"></div>
         </p>
         <p className="upp">
           UNAVAILABLE <div className="square red"></div>
@@ -23,8 +26,9 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
           AVAILABLE <div className="square green"></div>
         </p>
         <p>
-          RESERVED<div className="square orange"></div>
+          RESERVED <div className="square orange"></div>
         </p>
+        
       </div>
       <div className="hall-layout">
         <div className="stage">STAGE</div>
@@ -50,7 +54,9 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
                       key={seat.seat_id}
                       className={`seat ${
                         seat.selected
-                          ? "selected"
+                          ? seat.isUserSelection
+                            ? "user-selection" // Special style for user's selection
+                            : "selected"
                           : seat.reserved
                           ? "reserved"
                           : seat.availability
@@ -87,7 +93,9 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
                       key={seat.seat_id}
                       className={`seat ${
                         seat.selected
-                          ? "selected"
+                          ? seat.isUserSelection
+                            ? "user-selection" // Special style for user's selection
+                            : "selected"
                           : seat.reserved
                           ? "reserved"
                           : seat.availability
@@ -113,6 +121,7 @@ SeatsLayout.propTypes = {
       selected: PropTypes.bool.isRequired,
       reserved: PropTypes.bool.isRequired,
       availability: PropTypes.bool.isRequired,
+      isUserSelection: PropTypes.bool.isRequired, // Add PropType for isUserSelection
     })
   ).isRequired,
   toggleSeatSelection: PropTypes.func.isRequired,
