@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../client";
+import Navbar from "./Navbar"; // Import the shared Navbar component
 import "../styling/Homepage.css";
 
 const Homepage = ({ token }) => {
@@ -29,7 +30,6 @@ const Homepage = ({ token }) => {
         throw error;
       }
 
-      // Ensure data is an array
       if (Array.isArray(eventsData)) {
         setEvents(eventsData);
       } else {
@@ -40,44 +40,23 @@ const Homepage = ({ token }) => {
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    navigate("/");
-  };
-
   const handleReserveSeats = (eventId, hallName) => {
     navigate(`${hallName}/${eventId}`);
   };
 
-  const navigateToCreateEvent = () => {
-    navigate('/create-event', { state: { token } });
-  };
+  // Function to format date and time
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
 
-  const navigateToEvents = () => {
-    navigate("/homepage");
+    const formattedDate = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+    const formattedTime = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
+
+    return `DATE AND TIME: ${formattedDate} at ${formattedTime.replace(':', 'h')}`;
   };
 
   return (
     <div className="homepage-container">
-      <nav className="navbar">
-        <div className="nav-left">
-          <div className="nav-item" onClick={navigateToEvents}>
-            Events
-          </div>
-          <div className="nav-item" onClick={navigateToCreateEvent}>
-            Create Event
-          </div>
-        </div>
-        <div className="nav-right">
-          <div className="nav-item" onClick={handleLogout}>
-            Logout
-          </div>
-          <div className="avatar-container">
-            <div className="avatar" />
-            <div className="tooltip">{token?.user?.user_metadata?.full_name}</div>
-          </div>
-        </div>
-      </nav>
+      <Navbar token={token} /> {/* Use the shared Navbar component */}
 
       <div className="events-container">
         {events.length > 0 ? (
@@ -85,7 +64,7 @@ const Homepage = ({ token }) => {
             <div key={event.event_id} className="event-item">
               <div className="event-details">
                 <h2>{event.title}</h2>
-                <p>Date: {event.date}</p>
+                <p>{formatDate(event.date)}</p> {/* Displaying formatted date */}
                 <p>Location: {event.halls?.name}</p> {/* Displaying hall name */}
                 <button
                   onClick={() =>

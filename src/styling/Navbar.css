@@ -1,0 +1,71 @@
+/* Navbar.css */
+.navbar {
+  display: flex;
+  font-weight: 600;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #abd699; /* Blue background for the navbar */
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-item {
+  margin: 0 10px;
+  cursor: pointer;
+  padding: 10px;
+  transition: background-color 0.3s;
+}
+
+.nav-item:hover {
+  background-color: #75c9b7; /* Darker blue on hover */
+  border-radius: 4px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  background-image: url("../image/ticket.png"); /* Path to your logo image */
+  background-size: cover;
+  background-position: center;
+  margin-right: 20px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  background-image: url("../image/avatar.png"); /* Path to your avatar image */
+  background-size: cover;
+  background-position: center;
+  margin-right: 10px;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  padding: 5px 10px;
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+}

@@ -8,73 +8,20 @@ body {
   background-color: #f4f4f4; /* Light background for the page */
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  background-color: #333;
-  padding: 10px;
-  color: white;
-  border-radius: 5px; /* Rounded corners for the navbar */
-}
-
-.nav-left,
-.nav-right {
-  display: flex;
-  align-items: center;
-}
-
-.nav-item {
-  margin: 0 10px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.nav-item:hover {
-  color: #ffeb3b; /* Highlight color on hover */
-}
-
-.avatar-container {
-  position: relative;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-image: url('../image/avatar.png'); /* Avatar image */
-  background-size: cover;
-  background-position: center;
-  margin-right: 20px;
-}
-
-.tooltip {
-  display: none;
-  position: absolute;
-  top: 50px; /* Position below the avatar */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  white-space: nowrap; /* Prevent text wrapping */
-  z-index: 1000; /* Ensure it appears above other elements */
-}
-
 .avatar-container:hover .tooltip {
   display: block;
 }
 
 .events-container {
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  
 }
 
 .event-item {
+  
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -87,6 +34,7 @@ body {
 
 .event-details {
   flex: 1;
+  
 }
 
 .event-banner {
@@ -96,6 +44,7 @@ body {
   background-size: cover;
   background-position: center;
   border-radius: 8px;
+  
 }
 
 .event-item h2 {
@@ -112,7 +61,7 @@ body {
   background-color: #f44336;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 15px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;

@@ -8,7 +8,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #1B4543; /* Adjust the path as needed */
+  background-color: #4d4797; /* Adjust the path as needed */
   background-size: cover;
   background-position: center;
    /* Add blur effect to the background */
@@ -16,49 +16,14 @@ body {
 }
 
 .page-container {
+  top: 50px;
   position: relative; /* Ensure other elements respect the stacking context */
-  width: 800px;
+  width: 700px;
   margin: 0 auto;
   z-index: 1; /* Keep main content above background */
 }
 
-.top-left-corner {
-  display: flex;
-  flex-direction: column;
-  
- 
-  
-}
 
-.myselection{
-  background-color: rgb(255, 238, 0);
-  border: 2px solid rgb(139, 37, 37);
-}
-
-.yellow {
-  background-color: #fbff00;
-  
-}
-
-.red {
-  background-color: rgb(139, 37, 37);
-  
-}
-
-.green {
-  background-color: #B3D06C;
-
-}
-
-.orange {
-  background-color: #ffac27;
-
-}
-
-.upp {
-  margin-bottom: -5px;
-  font-weight: 600;
-}
 
 .hall-layout {
   font-size: 30px;
@@ -71,10 +36,10 @@ body {
 }
 
 .stage {
-  width: 600px;
-  height: 70px;
-  background-color: #ffffff; /* Updated to a shade of blue */
-  color: #F0BE6F; /* Text color */
+  width: 500px;
+  height: 80px;
+  background-color: #75C9B7; /* Updated to a shade of blue */
+  color: #ffffff; /* Text color */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -141,7 +106,7 @@ body {
 }
 
 .available {
-  background-color: #B3D06C /* Green for available seats */
+  background-color: #ABD699 /* Green for available seats */
 }
 
 .unavailable {
@@ -182,9 +147,9 @@ body {
 
 .reserve-button {
   padding: 10px 50px;
-  background-color: #ffffff;
+  background-color: #75C9B7;
   border: none;
-  color: #F0BE6F;
+  color: #ffffff;
   text-align: center;
   text-decoration: none;
   display: block;
@@ -193,12 +158,12 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition-duration: 0.4s;
-  margin: 30px auto; /* Center the button and add spacing */
+  margin: 100px auto; /* Center the button and add spacing */
 }
 
 .confirm-order-button:hover,
 .reserve-button:hover {
-  background-color: #b3d0b3;
+  background-color: #ABD699;
 }
 
 .buttons-container {
@@ -255,98 +220,4 @@ h1 {
 }
 
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-  background-color: #1B4543;
-  padding: 10px;
-  color: white;
-  border-radius: 5px;
-  border-bottom: 1px solid #FFFFFF; /* Add this line */
-}
 
-
-.nav-left,
-.nav-right {
-  
-  align-items: center;
-}
-
-.nav-item {
-  margin: 0 10px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  color: #ffffff;
-  font-weight: 500;
-}
-
-.nav-item:hover {
-  color: #ffeb3b;
-}
-
-.avatar-container {
-  position: relative;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-image: url('../image/avatar.png'); /* Avatar image */
-  background-size: cover;
-  background-position: center;
-  margin-right: 20px;
-}
-
-.logo {
-  width: 80px;
-  height: 50px;
-  border-radius: 50%;
-  background-image: url('../image/logo2.png'); /* Avatar image */
-  background-size: cover;
-  background-position: center;
-  margin-left: 20px;
-}
-
-.tooltip {
-  display: none;
-  position: absolute;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  white-space: nowrap;
-  z-index: 1000;
-}
-
-.avatar-container:hover .tooltip {
-  display: block;
-}
-
-.nav-item.dropdown-container {
-  position: relative;
-  display: inline-block;
-}
-
-.nav-item .dropdown {
-  display: none;
-  position: absolute;
-  top: 40px; /* Position the dropdown directly below the Help item */
-  background-color: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  color: black;
-  white-space: nowrap; /* Prevent the text from wrapping */
-}
-
-.nav-item.dropdown-container:hover .dropdown {
-  display: block;
-}

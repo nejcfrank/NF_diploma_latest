@@ -8,7 +8,7 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
     24, 28, 28, 30, 30, 31, 30, 28, 25, 20, 19, 16, 25, 20, 19, 16,
   ];
   // Define seat labels (A, B, C, ...)
-  const seatLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const seatLabels = "ABCDEFG";
 
   return (
     <div className="page-container">
@@ -52,7 +52,7 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
             </div>
           ))}
         </div>
-        <h6 className="balkon">BALKON</h6>
+       
         <div className="seats-container">
           {rowSeatCounts.slice(11).map((seatCount, rowIndex) => (
             <div className="seats-row" key={rowIndex + 11}>

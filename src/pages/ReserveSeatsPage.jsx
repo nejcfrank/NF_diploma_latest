@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../client";
 import SeatsLayout from "./SeatsLayout";
 import ReservationTimer from "./ReservationTimer";
+import Navbar from "./Navbar"; // Import the shared Navbar component
 import "../styling/reserveseatspage.css";
 
 const ReserveSeatsPage = ({ token }) => {
   const { eventId } = useParams();
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [reservedSeats, setReservedSeats] = useState([]);
@@ -100,7 +101,7 @@ const ReserveSeatsPage = ({ token }) => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [eventId]); // Depend on eventId if needed
+  }, [eventId]);
 
   useEffect(() => {
     const pricePerSeat = 10; // Set your price per seat here
@@ -458,51 +459,12 @@ const ReserveSeatsPage = ({ token }) => {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="nav-item" onClick={navigateToHome}>
-          <div className="nav-left"></div>
-          <div className="logo"></div>
-        </div>
-        <div className="nav-right">
-          <div className="nav-item dropdown-container">
-            Help
-            <div className="dropdown">
-              <div className="top-left-corner">
-                <div className="upp">
-                  <p className="myselection">SELECTED BY ME</p>
-                </div>
-
-                <div className="upp">
-                  <p className="yellow">SELECTED BY OTHER</p>
-                </div>
-
-                <div className="upp">
-                  <p className="red">UNAVAILABLE</p>
-                </div>
-                <div className="upp">
-                  <p className="green">AVAILABLE</p>
-                </div>
-                <div className="upp">
-                  <p className="orange">RESERVED</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="nav-item" onClick={navigateToEvents}>
-            Events
-          </div>
-          <div className="nav-item" onClick={navigateToCreateEvent}>
-            Create Event
-          </div>
-          <div className="nav-item" onClick={handleLogout}>
-            Logout
-          </div>
-          <div className="avatar-container">
-            <div className="avatar"></div>
-            <div className="tooltip">User Profile</div>
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        navigateToHome={navigateToHome}
+        navigateToEvents={navigateToEvents}
+        navigateToCreateEvent={navigateToCreateEvent}
+        handleLogout={handleLogout}
+      />
       <div className="background-container"></div>
       <div className="page-container">
         <SeatsLayout seats={seats} toggleSeatSelection={toggleSeatSelection} />

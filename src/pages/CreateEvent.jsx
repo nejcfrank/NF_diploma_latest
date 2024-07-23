@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../client"; // Ensure you have Supabase client set up
+import Navbar from "./Navbar"; // Import the shared Navbar component
 import "../styling/CreateEvent.css";
 
 const CreateEvent = ({ token }) => {
@@ -107,83 +108,50 @@ const CreateEvent = ({ token }) => {
       alert("Error creating event or tickets: " + error.message);
     }
   };
-  
-  
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    navigate("/");
-  };
-
-  const navigateToEvents = () => {
-    navigate("/homepage");
-  };
-
-  const navigateToCreateEvent = () => {
-    navigate("/create-event");
-  };
 
   return (
     <div className="create-event-container">
-      <nav className="navbar">
-        <div className="nav-left">
-          <div className="nav-item" onClick={navigateToEvents}>
-            Events
-          </div>
-          <div className="nav-item" onClick={navigateToCreateEvent}>
-            Create Event
-          </div>
-        </div>
-        <div className="nav-right">
-          <div className="nav-item" onClick={handleLogout}>
-            Logout
-          </div>
-          <div className="avatar-container">
-            <div className="avatar" />
-            <div className="tooltip">
-              {token?.user?.user_metadata?.full_name}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar token={token} /> {/* Use the shared Navbar component */}
 
-      <h2>Create Event</h2>
-      <form onSubmit={handleSubmit} className="create-event-form">
-        <label>
-          Event Name:
-          <input
-            type="text"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Event Date:
-          <input
-            type="date"
-            value={eventDate}
-            onChange={(e) => setEventDate(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Event Location:
-          <select
-            value={selectedHall}
-            onChange={(e) => setSelectedHall(Number(e.target.value))}
-            required
-          >
-            <option value="">Select a hall</option>
-            {halls.map((hall) => (
-              <option key={hall.hall_id} value={hall.hall_id}>
-                {hall.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button type="submit">Create Event</button>
-      </form>
+      <div className="create-event-content">
+        <h2>Create Event</h2>
+        <form onSubmit={handleSubmit} className="create-event-form">
+          <label>
+            Event Name:
+            <input
+              type="text"
+              value={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Event Date:
+            <input
+              type="date"
+              value={eventDate}
+              onChange={(e) => setEventDate(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Event Location:
+            <select
+              value={selectedHall}
+              onChange={(e) => setSelectedHall(Number(e.target.value))}
+              required
+            >
+              <option value="">Select a hall</option>
+              {halls.map((hall) => (
+                <option key={hall.hall_id} value={hall.hall_id}>
+                  {hall.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button type="submit">Create Event</button>
+        </form>
+      </div>
     </div>
   );
 };
