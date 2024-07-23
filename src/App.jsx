@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { SignUp, Login, Homepage } from "./pages";
 import ReserveSeatsPage from "./pages/ReserveSeatsPage";
+import CreateEvent from "./pages/CreateEvent";
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/" element={<Login setToken={setToken} />} />
         {token && <Route path="/homepage" element={<Homepage token={token} />} />}
         {token && <Route path="/homepage/:eventLocation/:eventId" element={<ReserveSeatsPage token={token} />} />}
+        {token && <Route path="/create-event" element={<CreateEvent token={token} />} />} 
       </Routes>
     </div>
   );

@@ -20,20 +20,20 @@ const ReserveSeatsPage = ({ token }) => {
     fetchSeats(); // Fetch seats when component mounts
 
     const seatsSubscription = supabase
-      .channel("seats")
+      .channel("tickets")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "seats" },
+        { event: "UPDATE", schema: "public", table: "tickets" },
         handleSeatUpdate
       )
       .on(
         "postgres_changes",
-        { event: "DELETE", schema: "public", table: "seats" },
+        { event: "DELETE", schema: "public", table: "tickets" },
         handleSeatUpdate
       )
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "seats" },
+        { event: "INSERT", schema: "public", table: "tickets" },
         handleSeatUpdate
       )
       .subscribe();
@@ -71,27 +71,27 @@ const ReserveSeatsPage = ({ token }) => {
   const fetchSeats = async () => {
     try {
       const { data, error } = await supabase
-        .from("seats")
+        .from("tickets")
         .select("*")
         .eq("event_id", eventId)
         .order("seat_id", { ascending: true });
-
+  
       if (error) {
         throw error;
       }
-
-      const updatedSeats = data.map((seat) => ({
-        ...seat,
-        selected: seat.selected || false,
-        highlight: seat.reserved || seat.selected,
+  
+      const updatedSeats = data.map((ticket) => ({
+        ...ticket,
+        selected: ticket.selected || false,
+        highlight: ticket.reserved || ticket.selected,
         isUserSelection:
-          seat.selected &&
-          seat.interaction_made_by_user === token.user.user_metadata.sub,
+          ticket.selected &&
+          ticket.interaction_made_by_user === token.user.user_metadata.sub,
       }));
-
+  
       setSeats(updatedSeats);
     } catch (error) {
-      console.error("Error fetching seats:", error.message);
+      console.error("Error fetching tickets:", error.message);
     }
   };
 
@@ -102,9 +102,9 @@ const ReserveSeatsPage = ({ token }) => {
   const toggleSeatSelection = async (seatId) => {
     const seatIndex = seats.findIndex((seat) => seat.seat_id === seatId);
     if (seatIndex === -1) return; // Seat not found
-
+  
     const selectedSeat = seats[seatIndex];
-
+  
     // Check seat availability and current reservation status
     if (
       selectedSeat.reserved ||
@@ -114,9 +114,9 @@ const ReserveSeatsPage = ({ token }) => {
       alert("This seat has already been sold, reserved, or is unavailable.");
       return;
     }
-
+  
     const newSelectedStatus = !selectedSeat.selected;
-
+  
     // If trying to unselect, check if the current user is the one who selected the seat
     if (
       !newSelectedStatus &&
@@ -127,7 +127,7 @@ const ReserveSeatsPage = ({ token }) => {
       );
       return;
     }
-
+  
     // Update local state
     const updatedSeats = [...seats];
     updatedSeats[seatIndex] = {
@@ -138,13 +138,13 @@ const ReserveSeatsPage = ({ token }) => {
         : null,
       isUserSelection: newSelectedStatus,
     };
-
+  
     setSeats(updatedSeats);
-
-    // Update the seat in the database
+  
+    // Update the ticket in the database
     try {
       const { error } = await supabase
-        .from("seats")
+        .from("tickets")
         .update({
           selected: newSelectedStatus,
           interaction_made_by_user: newSelectedStatus
@@ -152,16 +152,16 @@ const ReserveSeatsPage = ({ token }) => {
             : null,
         })
         .eq("seat_id", seatId);
-
+  
       if (error) {
         throw error;
       }
-
+  
       // Update selectedSeats array in state
       const selectedSeatIds = updatedSeats
         .filter((seat) => seat.selected)
         .map((seat) => seat.seat_id);
-
+  
       setSelectedSeats(selectedSeatIds);
     } catch (error) {
       console.error("Error updating seat reservation status:", error.message);
@@ -175,35 +175,35 @@ const ReserveSeatsPage = ({ token }) => {
         const seat = seats.find((s) => s.seat_id === seatId);
         return seat && seat.isUserSelection;
       });
-
+  
       if (userSelectedSeats.length === 0) {
         alert("No seats selected by you to reserve.");
         return;
       }
-
+  
       // Check if any of the user-selected seats are already reserved
       const { data: reservedSeats, error: reservedError } = await supabase
-        .from("seats")
+        .from("tickets")
         .select("seat_id")
         .in("seat_id", userSelectedSeats)
         .eq("reserved", true);
-
+  
       if (reservedError) {
         throw reservedError;
       }
-
+  
       // Check if any of the user-selected seats are unavailable
       const { data: unavailableSeats, error: availabilityError } =
         await supabase
-          .from("seats")
+          .from("tickets")
           .select("seat_id")
           .in("seat_id", userSelectedSeats)
           .eq("availability", false);
-
+  
       if (availabilityError) {
         throw availabilityError;
       }
-
+  
       // If any seats are unavailable or already reserved, show an alert and exit
       if (unavailableSeats.length > 0 || reservedSeats.length > 0) {
         alert(
@@ -211,39 +211,39 @@ const ReserveSeatsPage = ({ token }) => {
         );
         return;
       }
-
+  
       const now = new Date();
       const expirationTime = now.getTime() + 60000; // 1 minute from now
-
+  
       // Retrieve any existing reservation details from local storage
       const storedReservation = JSON.parse(
         localStorage.getItem("reservation")
       ) || { seats: [] };
-
+  
       // Update the reserved_at timestamp for already reserved seats
       if (storedReservation.seats.length > 0) {
         const updateReservedAtPromises = storedReservation.seats.map(
           (seatId) => {
             return supabase
-              .from("seats")
+              .from("tickets")
               .update({ reserved_at: now })
               .eq("seat_id", seatId);
           }
         );
         await Promise.all(updateReservedAtPromises);
       }
-
+  
       // Update reservation details
       const reservationDetails = {
         seats: [...new Set([...storedReservation.seats, ...userSelectedSeats])],
         expirationTime,
       };
       localStorage.setItem("reservation", JSON.stringify(reservationDetails));
-
-      // Reserve the selected seats
+  
+      // Reserve the selected tickets
       const reservePromises = userSelectedSeats.map((seatId) => {
         return supabase
-          .from("seats")
+          .from("tickets")
           .update({
             reserved: true,
             reserved_at: now,
@@ -252,31 +252,32 @@ const ReserveSeatsPage = ({ token }) => {
           })
           .eq("seat_id", seatId);
       });
-
+  
       await Promise.all(reservePromises);
-
+  
       // Update the seats state with the newly reserved seats
       const updatedSeats = seats.map((seat) =>
         reservationDetails.seats.includes(seat.seat_id)
           ? { ...seat, reserved: true, reserved_at: now, selected: false }
           : seat
       );
-
+  
       setSeats(updatedSeats);
       setSelectedSeats([]);
       setReservedSeats(reservationDetails.seats);
-
+  
       if (timerId) {
         clearInterval(timerId); // Clear previous timer
       }
       startTimer(60); // Start or restart timer for 60 seconds
-
+  
       localStorage.setItem("showComponent", "true");
       setShowComponent(true);
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
     }
   };
+  
 
   const startTimer = (initialTime) => {
     let timeLeft = initialTime;
@@ -306,7 +307,7 @@ const ReserveSeatsPage = ({ token }) => {
 
       const expirePromises = expiredSeats.map(async (seatId) => {
         return supabase
-          .from("seats")
+          .from("tickets")
           .update({
             reserved: false,
             reserved_at: null,
@@ -332,9 +333,9 @@ const ReserveSeatsPage = ({ token }) => {
         localStorage.getItem("reservation")
       );
       const seatsToBuy = reservationDetails ? reservationDetails.seats : [];
-
-      const { updateError } = await supabase
-        .from("seats")
+  
+      const { error: updateError } = await supabase
+        .from("tickets")
         .update({
           availability: false,
           bought_at: new Date(),
@@ -342,20 +343,20 @@ const ReserveSeatsPage = ({ token }) => {
           reserved_at: null,
         })
         .in("seat_id", seatsToBuy);
-
+  
       if (updateError) {
         throw updateError;
       }
-
+  
       const { data: updatedSeatsData, error: fetchError } = await supabase
-        .from("seats")
+        .from("tickets")
         .select("*")
         .in("seat_id", seatsToBuy);
-
+  
       if (fetchError) {
         throw fetchError;
       }
-
+  
       setSeats(updatedSeatsData);
       localStorage.removeItem("reservation");
       localStorage.removeItem("remainingTime");
@@ -364,6 +365,7 @@ const ReserveSeatsPage = ({ token }) => {
       console.error("Error confirming order:", error.message);
     }
   };
+  
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");

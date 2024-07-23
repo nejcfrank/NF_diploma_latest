@@ -12,7 +12,6 @@ const SeatsLayout = ({ seats, toggleSeatSelection }) => {
 
   return (
     <div className="page-container">
-      
       <div className="hall-layout">
         <div className="stage">STAGE</div>
         <h6 className="parter">PARTER</h6>
