@@ -1,29 +1,47 @@
 /* Navbar.css */
+
 .navbar {
   display: flex;
   font-weight: 600;
-  justify-content: space-between;
+  justify-content: center; /* Center the content horizontally */
   align-items: center;
   padding: 10px 20px;
-  background-color: #abd699; /* Blue background for the navbar */
+  background-color: #abd699; /* Background color for the navbar */
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed; /* Ensure the navbar stays fixed at the top */
+  width: 100%; /* Full width */
+  top: 0; /* Stick to the top */
+  z-index: 1000; /* Ensure it stays above other content */
+  left: 0; /* Align to the left edge */
 }
 
-.nav-left {
+.nav-left, .nav-right {
   display: flex;
   align-items: center;
 }
 
-.nav-item {
-  margin: 0 10px;
-  cursor: pointer;
-  padding: 10px;
-  transition: background-color 0.3s;
+.nav-left {
+  margin-right: auto; /* Pushes the .nav-right to the right */
 }
 
-.nav-item:hover {
-  background-color: #75c9b7; /* Darker blue on hover */
+.nav-right {
+  margin-left: auto; /* Ensures proper alignment */
+}
+
+.nav-item {
+  margin: 0; /* Remove default margin */
+  padding: 10px 50px; /* Add padding to left and right */
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  display: flex;
+  align-items: center; /* Align text vertically in the center */
+  height: 100%; /* Make sure the item takes up the full height of the navbar */
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: #75c9b7; /* Darker blue on hover and active state */
+  color: #fff; /* White text color for better contrast */
   border-radius: 4px;
 }
 
@@ -33,12 +51,9 @@
   background-image: url("../image/ticket.png"); /* Path to your logo image */
   background-size: cover;
   background-position: center;
+  cursor: pointer; /* Makes the logo look clickable */
   margin-right: 20px;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
+  background-color: transparent; 
 }
 
 .avatar-container {
@@ -55,17 +70,25 @@
   background-image: url("../image/avatar.png"); /* Path to your avatar image */
   background-size: cover;
   background-position: center;
-  margin-right: 10px;
+  margin-right: 50px;
+  cursor: pointer; /* Makes the avatar look clickable */
 }
 
 .tooltip {
-  display: none;
+  display: none; /* Hide tooltip by default */
   position: absolute;
   top: 50px;
   right: 0;
   padding: 5px 10px;
   color: white;
+  background-color: #333; /* Dark background for the tooltip */
   border-radius: 4px;
   font-size: 14px;
   white-space: nowrap;
+  z-index: 2000; /* Ensure it stays above other content */
+}
+
+.avatar-container:hover .tooltip {
+  display: block; /* Show tooltip on hover */
+  margin-right: 38px;
 }

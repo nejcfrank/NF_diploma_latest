@@ -74,7 +74,7 @@ const Homepage = ({ token }) => {
                   RESERVE SEATS
                 </button>
               </div>
-              <div className="event-banner" />
+              {/* Removed event-banner */}
             </div>
           ))
         ) : (

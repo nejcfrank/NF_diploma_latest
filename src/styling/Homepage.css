@@ -1,74 +1,69 @@
 /* Homepage.css */
 body {
   font-family: Arial, sans-serif;
-}
-.homepage-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4; /* Light background for the page */
+  background-color: #4d4797;
 }
 
-.avatar-container:hover .tooltip {
-  display: block;
+.homepage-container {
+  padding: 20px;
+  padding-top: 70px; /* Adjust according to the height of the Navbar */
+  background-color: #4d4797; /* Light background for the page */
 }
 
 .events-container {
+  display: grid; /* Use CSS Grid for a responsive layout */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive columns */
+  gap: 20px; /* Space between items */
   padding-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  
 }
 
 .event-item {
-  
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for a modern look */
+  background-color: #f9f9f9; /* Slightly off-white background for a modern look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth transitions */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.event-item:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
 
 .event-details {
   flex: 1;
-  
-}
-
-.event-banner {
-  width: 75%; /* Adjust width and height as needed */
-  height: 200px;
-  background-image: url('../image/COLDPLAY.jpg'); /* Fixed banner image */
-  background-size: cover;
-  background-position: center;
-  border-radius: 8px;
-  
 }
 
 .event-item h2 {
   margin-bottom: 10px;
-  font-size: 1.5rem; /* Slightly larger font for event title */
+  font-size: 1.25rem; /* Adjust font size */
+  color: #333; /* Darker text color for contrast */
 }
 
 .event-item p {
   margin: 5px 0;
-  font-size: 1rem;
+  font-size: 0.875rem; /* Smaller font size for details */
+  color: #666; /* Subtle text color */
 }
 
 .event-item button {
-  background-color: #f44336;
+  background-color: #ABD699; /* Primary button color */
   color: white;
   border: none;
-  padding: 15px 16px;
+  padding: 12px 20px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
 }
 
 .event-item button:hover {
-  background-color: #d32f2f; /* Darker shade for hover effect */
+  background-color: #92b683; /* Darker shade on hover */
+  transform: scale(1.05); /* Slightly enlarge button on hover */
 }
 
 .logout-button {
@@ -100,4 +95,3 @@ body {
 .user-info span {
   margin-right: 10px;
 }
-

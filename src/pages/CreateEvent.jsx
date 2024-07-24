@@ -6,7 +6,7 @@ import "../styling/CreateEvent.css";
 
 const CreateEvent = ({ token }) => {
   const [eventName, setEventName] = useState("");
-  const [eventDate, setEventDate] = useState("");
+  const [eventDateTime, setEventDateTime] = useState(""); // Updated state for date and time
   const [selectedHall, setSelectedHall] = useState("");
   const [halls, setHalls] = useState([]);
   const navigate = useNavigate();
@@ -32,51 +32,54 @@ const CreateEvent = ({ token }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
+      // Convert eventDateTime to ISO string format
+      const formattedEventDateTime = new Date(eventDateTime).toISOString();
+
       // Step 1: Insert Event
       const { data: eventData, error: eventError } = await supabase
         .from("event")
         .insert([
           {
             title: eventName,
-            date: eventDate,
+            date: formattedEventDateTime, // Use ISO string for timestamp
             hall_id: selectedHall,
           }
         ])
         .select(); // Use .select() to get the inserted record
-  
+
       if (eventError) {
         console.error("Error inserting event:", eventError.message);
         throw eventError;
       }
-  
+
       if (!eventData || eventData.length === 0) {
         throw new Error("Event data is null or undefined");
       }
-  
+
       const insertedEvent = eventData[0];
       const eventId = insertedEvent.event_id;
-  
+
       console.log("Inserted Event Data:", insertedEvent);
-  
+
       // Step 2: Fetch Seats for the Selected Hall
       const { data: seats, error: seatsError } = await supabase
         .from("seats")
         .select("seat_id, seat_position")
         .eq("hall_id", selectedHall);
-  
+
       if (seatsError) {
         console.error("Error fetching seats:", seatsError.message);
         throw seatsError;
       }
-  
+
       if (!seats || seats.length === 0) {
         throw new Error("No seats found for the selected hall");
       }
-  
+
       console.log("Seats Data:", seats);
-  
+
       // Step 3: Insert Tickets for Each Seat
       const ticketInserts = seats.map((seat) => ({
         seat_id: seat.seat_id, // Ensure this matches actual seat_id in the database
@@ -90,18 +93,18 @@ const CreateEvent = ({ token }) => {
         reserved: false,
         interaction_made_by_user: null,
       }));
-  
+
       console.log("Ticket Inserts Data:", ticketInserts);
-  
+
       const { error: ticketError } = await supabase
         .from("tickets")
         .insert(ticketInserts);
-  
+
       if (ticketError) {
         console.error("Error inserting tickets:", ticketError.message);
         throw ticketError;
       }
-  
+
       alert("Event created and tickets populated!");
       navigate("/homepage");
     } catch (error) {
@@ -126,11 +129,11 @@ const CreateEvent = ({ token }) => {
             />
           </label>
           <label>
-            Event Date:
+            Event Date and Time:
             <input
-              type="date"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
+              type="datetime-local"
+              value={eventDateTime}
+              onChange={(e) => setEventDateTime(e.target.value)}
               required
             />
           </label>

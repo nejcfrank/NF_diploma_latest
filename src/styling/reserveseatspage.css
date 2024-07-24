@@ -18,9 +18,10 @@ body {
 .page-container {
   top: 50px;
   position: relative; /* Ensure other elements respect the stacking context */
-  width: 700px;
+  width: 1000px;
   margin: 0 auto;
   z-index: 1; /* Keep main content above background */
+  
 }
 
 
@@ -181,12 +182,12 @@ h1 {
 }
 
 .corner-component {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  position:fixed;
+  top: 110px;
+  right: 40px;
   background-color: white;
   padding: 20px;
-  border: 1px solid black;
+  border: 5px solid #ABD699;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   text-align: center;

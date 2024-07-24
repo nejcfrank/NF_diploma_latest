@@ -45,6 +45,7 @@ const ReservationTimer = ({
 
   return (
     <div className="corner-component">
+      <h1>CART</h1>
       <div className="reservation-timer">
         Reservation expires in: <span className="timer">{remainingTime}</span>{" "}
         seconds
