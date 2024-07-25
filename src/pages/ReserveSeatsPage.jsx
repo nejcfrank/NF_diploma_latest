@@ -12,23 +12,71 @@ const ReserveSeatsPage = ({ token }) => {
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [reservedSeats, setReservedSeats] = useState([]);
-  
   const [showComponent, setShowComponent] = useState(false);
   const [remainingTime, setRemainingTime] = useState(60);
   const [timerId, setTimerId] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Fetch seat data from Supabase
+  // Function to fetch and process seat data
   const fetchSeats = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch ticket and seat data with a join
+      const { data: tickets, error: ticketsError } = await supabase
         .from("tickets")
-        .select("*")
+        .select(
+          `
+          *,
+          seats: seat_id (seat_position)
+        `
+        )
         .eq("event_id", eventId)
         .order("seat_id", { ascending: true });
 
-      if (error) throw error;
+      if (ticketsError) throw ticketsError;
 
-      const updatedSeats = data.map((ticket) => ({
+      // Create a mapping of seat positions to their respective seat IDs
+      const seatMapping = tickets.reduce((acc, ticket) => {
+        const seatPosition = ticket.seats?.seat_position; // Retrieve seat_position from the joined seat data
+
+        if (!seatPosition) {
+          console.warn(
+            `Seat position is missing for seat_id: ${ticket.seat_id}`
+          );
+          return acc;
+        }
+
+        const rowMatch = seatPosition.match(/[A-Z]+/);
+        const numberMatch = seatPosition.match(/\d+/);
+
+        if (!rowMatch || !numberMatch) {
+          console.warn(
+            `Invalid seat position format for seat_id: ${ticket.seat_id}`
+          );
+          return acc;
+        }
+
+        const row = rowMatch[0];
+        const number = parseInt(numberMatch[0], 10);
+
+        if (!acc[row]) {
+          acc[row] = [];
+        }
+
+        acc[row].push({ ...ticket, row, number });
+        return acc;
+      }, {});
+
+      // Sort seats within each row by seat number
+      const sortedSeats = Object.keys(seatMapping)
+        .sort() // Sort rows (e.g., 'A', 'B', 'C', ...)
+        .reduce((acc, row) => {
+          const seatsInRow = seatMapping[row];
+          seatsInRow.sort((a, b) => a.number - b.number); // Sort seats within the row by number
+          return acc.concat(seatsInRow);
+        }, []);
+
+      // Update the seat states
+      const updatedSeats = sortedSeats.map((ticket) => ({
         ...ticket,
         selected: ticket.selected || false,
         highlight: ticket.reserved || ticket.selected,
@@ -50,9 +98,9 @@ const ReserveSeatsPage = ({ token }) => {
   const toggleSeatSelection = async (seatId) => {
     const seatIndex = seats.findIndex((seat) => seat.seat_id === seatId);
     if (seatIndex === -1) return;
-  
+
     const selectedSeat = seats[seatIndex];
-  
+
     if (
       selectedSeat.reserved ||
       selectedSeat.bought_at ||
@@ -61,17 +109,19 @@ const ReserveSeatsPage = ({ token }) => {
       alert("This seat has already been sold, reserved, or is unavailable.");
       return;
     }
-  
+
     const newSelectedStatus = !selectedSeat.selected;
-  
+
     if (
       !newSelectedStatus &&
       selectedSeat.interaction_made_by_user !== token.user.user_metadata.sub
     ) {
-      alert("You cannot unselect this seat because it was not selected by you.");
+      alert(
+        "You cannot unselect this seat because it was not selected by you."
+      );
       return;
     }
-  
+
     const updatedSeats = [...seats];
     updatedSeats[seatIndex] = {
       ...updatedSeats[seatIndex],
@@ -81,9 +131,9 @@ const ReserveSeatsPage = ({ token }) => {
         : null,
       isUserSelection: newSelectedStatus,
     };
-  
+
     setSeats(updatedSeats);
-  
+
     try {
       const { error } = await supabase
         .from("tickets")
@@ -95,9 +145,9 @@ const ReserveSeatsPage = ({ token }) => {
         })
         .eq("seat_id", seatId)
         .eq("event_id", eventId);
-  
+
       if (error) throw error;
-  
+
       const selectedSeatIds = updatedSeats
         .filter((seat) => seat.selected)
         .map((seat) => seat.seat_id);
@@ -106,7 +156,6 @@ const ReserveSeatsPage = ({ token }) => {
       console.error("Error updating seat reservation status:", error.message);
     }
   };
-  
 
   // Handle the reserve button click
   const handleReserveButtonClick = async () => {
@@ -115,21 +164,21 @@ const ReserveSeatsPage = ({ token }) => {
         const seat = seats.find((s) => s.seat_id === seatId);
         return seat && seat.isUserSelection;
       });
-  
+
       if (userSelectedSeats.length === 0) {
         alert("No seats selected by you to reserve.");
         return;
       }
-  
+
       const { data: reservedSeats, error: reservedError } = await supabase
         .from("tickets")
         .select("seat_id")
         .in("seat_id", userSelectedSeats)
         .eq("reserved", true)
         .eq("event_id", eventId);
-  
+
       if (reservedError) throw reservedError;
-  
+
       const { data: unavailableSeats, error: availabilityError } =
         await supabase
           .from("tickets")
@@ -137,36 +186,42 @@ const ReserveSeatsPage = ({ token }) => {
           .in("seat_id", userSelectedSeats)
           .eq("availability", false)
           .eq("event_id", eventId);
-  
+
       if (availabilityError) throw availabilityError;
-  
+
       if (unavailableSeats.length > 0 || reservedSeats.length > 0) {
-        alert("One or more of the selected seats are already reserved or unavailable.");
+        alert(
+          "One or more of the selected seats are already reserved or unavailable."
+        );
         return;
       }
-  
+
       const now = new Date();
       const expirationTime = now.getTime() + 60000; // 1 minute from now
-  
-      const storedReservation = JSON.parse(localStorage.getItem("reservation")) || { seats: [] };
-  
+
+      const storedReservation = JSON.parse(
+        localStorage.getItem("reservation")
+      ) || { seats: [] };
+
       if (storedReservation.seats.length > 0) {
-        const updateReservedAtPromises = storedReservation.seats.map((seatId) => {
-          return supabase
-            .from("tickets")
-            .update({ reserved_at: now })
-            .eq("seat_id", seatId)
-            .eq("event_id", eventId);
-        });
+        const updateReservedAtPromises = storedReservation.seats.map(
+          (seatId) => {
+            return supabase
+              .from("tickets")
+              .update({ reserved_at: now })
+              .eq("seat_id", seatId)
+              .eq("event_id", eventId);
+          }
+        );
         await Promise.all(updateReservedAtPromises);
       }
-  
+
       const reservationDetails = {
         seats: [...new Set([...storedReservation.seats, ...userSelectedSeats])],
         expirationTime,
       };
       localStorage.setItem("reservation", JSON.stringify(reservationDetails));
-  
+
       const reservePromises = userSelectedSeats.map((seatId) => {
         return supabase
           .from("tickets")
@@ -179,36 +234,35 @@ const ReserveSeatsPage = ({ token }) => {
           .eq("seat_id", seatId)
           .eq("event_id", eventId);
       });
-  
+
       await Promise.all(reservePromises);
-  
+
       const updatedSeats = seats.map((seat) =>
         reservationDetails.seats.includes(seat.seat_id)
           ? { ...seat, reserved: true, reserved_at: now, selected: false }
           : seat
       );
-  
+
       setSeats(updatedSeats);
       setSelectedSeats([]);
       setReservedSeats(reservationDetails.seats);
-  
+
       if (timerId) {
         clearInterval(timerId);
       }
       startTimer(60);
-  
+
       localStorage.setItem("showComponent", "true");
       setShowComponent(true);
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
     }
   };
-  
 
   // Start the reservation timer
   const startTimer = (initialTime) => {
     let timeLeft = initialTime;
-  
+
     const intervalId = setInterval(() => {
       timeLeft -= 1;
       if (timeLeft < 0) {
@@ -219,10 +273,10 @@ const ReserveSeatsPage = ({ token }) => {
       setRemainingTime(timeLeft);
       localStorage.setItem("remainingTime", timeLeft);
     }, 1000);
-  
+
     setTimerId(intervalId);
   };
-  
+
   // Reset seats selected by the user
   const resetSelectedSeats = useCallback(async () => {
     try {
@@ -239,8 +293,8 @@ const ReserveSeatsPage = ({ token }) => {
 
       // Filter seats to reset based on their state
       const seatIdsToReset = selectedSeats
-        .filter(seat => seat.selected && !seat.reserved) // Only reset seats that are selected and not reserved
-        .map(seat => seat.seat_id);
+        .filter((seat) => seat.selected && !seat.reserved) // Only reset seats that are selected and not reserved
+        .map((seat) => seat.seat_id);
 
       // Only proceed if there are seats to reset
       if (seatIdsToReset.length > 0) {
@@ -369,9 +423,9 @@ const ReserveSeatsPage = ({ token }) => {
       await resetSelectedSeats();
       await fetchSeats();
     };
-  
+
     fetchData();
-  
+
     const seatsSubscription = supabase
       .channel("tickets")
       .on(
@@ -390,15 +444,15 @@ const ReserveSeatsPage = ({ token }) => {
         handleSeatUpdate
       )
       .subscribe();
-  
+
     const storedReservation = JSON.parse(localStorage.getItem("reservation"));
     const storedTime = localStorage.getItem("remainingTime");
-  
+
     if (storedReservation && storedTime) {
       const timeLeft = Math.ceil(
         (storedReservation.expirationTime - Date.now()) / 1000
       );
-  
+
       if (timeLeft > 0) {
         setRemainingTime(timeLeft);
         startTimer(timeLeft);
@@ -408,7 +462,7 @@ const ReserveSeatsPage = ({ token }) => {
         handleReservationExpiration();
       }
     }
-  
+
     const handleBeforeUnload = async () => {
       try {
         await resetSelectedSeats();
@@ -425,17 +479,15 @@ const ReserveSeatsPage = ({ token }) => {
         console.error("Error handling before unload:", error.message);
       }
     };
-  
+
     window.addEventListener("beforeunload", handleBeforeUnload);
-  
+
     return () => {
       seatsSubscription.unsubscribe();
       if (timerId) clearInterval(timerId);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [eventId, token, resetSelectedSeats]);
-  
-  
 
   // Cleanup function to handle seat reset on component unmount
   useEffect(() => {
@@ -444,20 +496,75 @@ const ReserveSeatsPage = ({ token }) => {
       if (timerId) clearInterval(timerId);
     };
   }, [resetSelectedSeats, timerId]);
-  
 
+  const seatMapping = seats.reduce((acc, seat) => {
+    if (!acc[seat.row]) acc[seat.row] = [];
+    acc[seat.row].push(seat);
+    return acc;
+  }, {});
+
+  useEffect(() => {
+    const handleWheel = (event) => {
+      event.preventDefault();
+      const zoomFactor = 0.0005; // Adjust this to control zoom sensitivity
+      setZoomLevel((prevZoomLevel) => {
+        let newZoomLevel = prevZoomLevel + event.deltaY * -zoomFactor;
+        newZoomLevel = Math.min(Math.max(newZoomLevel, 0.5), 3); // Zoom limits
+        return newZoomLevel;
+      });
+    };
+    
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () =>
+      window.removeEventListener("wheel", handleWheel, { passive: false });
+  }, []);
 
   return (
     <>
       <Navbar
-        navigateToHome={navigateToHome}
-        navigateToEvents={navigateToEvents}
-        navigateToCreateEvent={navigateToCreateEvent}
+        navigateToHome={() => navigate("/homepage")}
+        navigateToEvents={() => navigate("/homepage")}
+        navigateToCreateEvent={() => navigate("/create-event")}
         handleLogout={handleLogout}
       />
       <div className="background-container"></div>
       <div className="page-container">
-        <SeatsLayout seats={seats} toggleSeatSelection={toggleSeatSelection} />
+        <div className="hall-layout">
+          {/* Removed the PARTER element */}
+          <div
+            className="seats-container"
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
+            <div className="stage">STAGE</div>
+            {Object.keys(seatMapping).map((row, rowIndex) => (
+              <div className="seats-row" key={rowIndex}>
+                <div className="seat-number">{row}</div>{" "}
+                {/* Row labels (A, B, C, ...) */}
+                <div className="seats-row-container">
+                  {seatMapping[row].map((seat) => (
+                    <div
+                      key={seat.seat_id}
+                      className={`seat ${
+                        seat.selected
+                          ? seat.isUserSelection
+                            ? "user-selection"
+                            : "selected"
+                          : seat.reserved
+                          ? "reserved"
+                          : seat.availability
+                          ? "available"
+                          : "unavailable"
+                      }`}
+                      onClick={() => toggleSeatSelection(seat.seat_id)}
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
         {selectedSeats.length > 0 && (
           <button className="reserve-button" onClick={handleReserveButtonClick}>
             RESERVE

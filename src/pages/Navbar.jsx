@@ -25,9 +25,6 @@ const Navbar = ({ token }) => {
   const userMetaData = token?.user?.user_metadata;
   const isAdmin = userMetaData?.role === 'admin';
 
-  // Log the user metadata and admin status
-  console.log('User Metadata:', userMetaData);
-  console.log('Is Admin:', isAdmin);
 
   return (
     <nav className="navbar">

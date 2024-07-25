@@ -3,9 +3,7 @@ import PropTypes from "prop-types";
 import "../styling/reserveseatspage.css";
 
 const SeatsLayout = ({ seats, toggleSeatSelection }) => {
-  const rowSeatCounts = [
-    24, 28, 28, 30, 30, 31, 30, 28, 25, 20, 19, 16, 25, 20, 19, 16,
-  ];
+  const rowSeatCounts = [24, ];
   const seatLabels = "ABCDEFG";
 
   return (

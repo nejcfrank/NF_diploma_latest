@@ -46,10 +46,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Updated box-shadow for a softer effect */
   font-size: 40px;
   font-weight: 700;
+  margin-bottom: 50px;
 }
 
 .parter {
@@ -71,8 +73,46 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-x: auto; /* Allows horizontal scrolling */
+  overflow: hidden; /* Prevent scrollbars from appearing */
+  transform-origin: 0 0; /* Set transform origin to top-left */
+  transition: transform 0.3s ease; /* Smooth transition for zoom */
 }
+
+
+.zoomed {
+  /* Optional: You can add specific styles when zoomed in */
+}
+
+.seats-container.zoomed {
+  transform: scale(1.5); /* Scale the container to zoom in */
+  transform-origin: center center; /* Center the zoom effect */
+}
+
+.zoom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.zoom-controls button {
+  background-color: #75C9B7;
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.zoom-controls button:hover {
+  background-color: #ABD699;
+}
+
+
 
 .seats-row {
   display: flex;
