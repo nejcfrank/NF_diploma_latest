@@ -1,4 +1,3 @@
-// src/components/Navbar.js
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styling/Navbar.css'; // Adjust the path as necessary
@@ -22,6 +21,14 @@ const Navbar = ({ token }) => {
 
   const isActive = (path) => location.pathname === path ? 'nav-item active' : 'nav-item';
 
+  // Access user metadata
+  const userMetaData = token?.user?.user_metadata;
+  const isAdmin = userMetaData?.role === 'admin';
+
+  // Log the user metadata and admin status
+  console.log('User Metadata:', userMetaData);
+  console.log('Is Admin:', isAdmin);
+
   return (
     <nav className="navbar">
       <div className="nav-left">
@@ -32,15 +39,18 @@ const Navbar = ({ token }) => {
         <div className={isActive('/homepage')} onClick={() => navigate('/homepage')}>
           Events
         </div>
-        <div className={isActive('/create-event')} onClick={navigateToCreateEvent}>
-          Create Event
-        </div>
+        {/* Conditionally render Create Event link if the user is an admin */}
+        {isAdmin && (
+          <div className={isActive('/create-event')} onClick={navigateToCreateEvent}>
+            Create Event
+          </div>
+        )}
         <div className="nav-item" onClick={handleLogout}>
           Logout
         </div>
         <div className="avatar-container">
           <div className="avatar" />
-          <div className="tooltip">{token?.user?.user_metadata?.full_name}</div>
+          <div className="tooltip">{userMetaData?.full_name}</div>
         </div>
       </div>
     </nav>

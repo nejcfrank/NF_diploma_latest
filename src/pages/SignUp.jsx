@@ -12,6 +12,8 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   function handleChange(event) {
     setFormData((prevFormData) => ({
@@ -25,47 +27,55 @@ const SignUp = () => {
   
     // Validation
     if (!formData.fullName || !formData.email || !formData.password) {
-      alert("All fields are required.");
+      setError("All fields are required.");
       return;
     }
   
     if (!isValidEmail(formData.email)) {
-      alert("Please enter a valid email address.");
+      setError("Please enter a valid email address.");
       return;
     }
   
     if (formData.password.length < 6) {
-      alert("Password must be at least 6 characters long.");
+      setError("Password must be at least 6 characters long.");
       return;
     }
   
     if (!isStrongPassword(formData.password)) {
-      alert("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+      setError("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
       return;
     }
   
     try {
-      // eslint-disable-next-line no-unused-vars
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
             full_name: formData.fullName,
-            age: 27, // just for example, you can remove this line if not needed
+            age: 27, // Example; adjust as needed
           },
         },
       });
-      alert("Your account has been successfully registered. Please log in to access the page.");
+
+      if (signUpError) {
+        if (signUpError.message.includes("already")) {
+          setError("This email is already taken.");
+        } else {
+          setError(signUpError.message);
+        }
+        return;
+      }
+
+      setSuccess("Your account has been successfully registered. Please log in to access the page.");
       navigate('/');
     } catch (error) {
-      alert(error.message);
+      setError("An unexpected error occurred. Please try again.");
     }
   }
   
   // Function to validate password complexity
   function isStrongPassword(password) {
-    // Regular expressions for password validation
     const uppercaseRegex = /[A-Z]/;
     const lowercaseRegex = /[a-z]/;
     const numberRegex = /[0-9]/;
@@ -79,28 +89,29 @@ const SignUp = () => {
     );
   }
   
-  
   // Function to validate email format
   function isValidEmail(email) {
-    // Regular expression for email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
   return (
     <div className="signup-container">
-      <h2 className="login-heading">SIGN UP</h2>
+      <h2 className="signup-heading">Sign Up</h2>
       <form onSubmit={handleSubmit} className="signup-form">
         <input
           className="signup-input"
-          placeholder="Username"
+          placeholder="Full Name"
           name="fullName"
+          value={formData.fullName}
           onChange={handleChange}
         />
         <input
           className="signup-input"
           placeholder="Email"
           name="email"
+          type="email"
+          value={formData.email}
           onChange={handleChange}
         />
         <input
@@ -108,11 +119,16 @@ const SignUp = () => {
           placeholder="Password"
           name="password"
           type="password"
+          value={formData.password}
           onChange={handleChange}
         />
         <button className="signup-button" type="submit">Submit</button>
       </form>
-      <p className="signup-link-text">Already have an account? <Link to={"/"} className="signup-link">Login</Link></p>
+      {error && <p className="error-message">{error}</p>}
+      {success && <p className="success-message">{success}</p>}
+      <p className="signup-link-text">
+        Already have an account? <Link to={"/"} className="signup-link">Login</Link>
+      </p>
     </div>
   );
 };

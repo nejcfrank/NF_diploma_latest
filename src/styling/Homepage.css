@@ -1,4 +1,3 @@
-/* Homepage.css */
 body {
   font-family: Arial, sans-serif;
   background-color: #4d4797;
@@ -18,6 +17,7 @@ body {
 }
 
 .event-item {
+  position: relative; /* Position relative to allow absolute positioning of child elements */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -37,6 +37,7 @@ body {
 
 .event-details {
   flex: 1;
+  padding-right: 40px; /* Space for the admin actions */
 }
 
 .event-item h2 {
@@ -64,6 +65,37 @@ body {
 .event-item button:hover {
   background-color: #92b683; /* Darker shade on hover */
   transform: scale(1.05); /* Slightly enlarge button on hover */
+}
+
+.admin-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px; /* Space between icons */
+}
+
+.edit-button,
+.delete-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #007bff; /* Blue color for edit icon */
+  font-size: 1.5rem; /* Adjust size of the icon */
+  transition: color 0.3s;
+}
+
+.delete-button {
+  color: #f44336; /* Red color for delete icon */
+}
+
+.edit-button:hover,
+.delete-button:hover {
+  color: #0056b3; /* Darker blue for edit icon on hover */
+}
+
+.delete-button:hover {
+  color: #c62828; /* Darker red for delete icon on hover */
 }
 
 .logout-button {
@@ -94,4 +126,65 @@ body {
 
 .user-info span {
   margin-right: 10px;
+}
+
+/* Edit form styles */
+.edit-form-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-form {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%; /* Full width */
+  max-width: 600px; /* Maximum width for large screens */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+.input-field {
+  display: block;
+  width: calc(100% - 20px);
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.save-changes-button,
+.cancel-edit-button {
+  background-color: #ABD699; /* Primary button color */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.save-changes-button:hover,
+.cancel-edit-button:hover {
+  background-color: #92b683; /* Darker shade on hover */
+  transform: scale(1.05); /* Slightly enlarge button on hover */
+}
+
+.cancel-edit-button {
+  background-color: #f44336; /* Red color for cancel button */
+}
+
+.cancel-edit-button:hover {
+  background-color: #d32f2f; /* Darker shade for cancel button hover effect */
 }
