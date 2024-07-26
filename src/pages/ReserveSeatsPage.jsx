@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../client";
 import SeatsLayout from "./SeatsLayout";
@@ -14,7 +14,7 @@ const ReserveSeatsPage = ({ token }) => {
   const [reservedSeats, setReservedSeats] = useState([]);
   const [showComponent, setShowComponent] = useState(false);
   const [remainingTime, setRemainingTime] = useState(60);
-  const [timerId, setTimerId] = useState(null);
+  const timerId = useRef(null);
   const [zoomLevel, setZoomLevel] = useState(1);
 
   // Function to fetch and process seat data
@@ -247,8 +247,8 @@ const ReserveSeatsPage = ({ token }) => {
       setSelectedSeats([]);
       setReservedSeats(reservationDetails.seats);
 
-      if (timerId) {
-        clearInterval(timerId);
+      if (timerId.current) {
+        clearInterval(timerId.current);
       }
       startTimer(60);
 
@@ -263,18 +263,16 @@ const ReserveSeatsPage = ({ token }) => {
   const startTimer = (initialTime) => {
     let timeLeft = initialTime;
 
-    const intervalId = setInterval(() => {
+    timerId.current = setInterval(() => {
       timeLeft -= 1;
       if (timeLeft < 0) {
-        clearInterval(intervalId);
+        clearInterval(timerId.current);
         handleReservationExpiration();
         return;
       }
       setRemainingTime(timeLeft);
       localStorage.setItem("remainingTime", timeLeft);
     }, 1000);
-
-    setTimerId(intervalId);
   };
 
   // Reset seats selected by the user
@@ -414,10 +412,6 @@ const ReserveSeatsPage = ({ token }) => {
     }
   };
 
-  const navigateToEvents = () => navigate("/homepage");
-  const navigateToCreateEvent = () => navigate("/create-event");
-  const navigateToHome = () => navigate("/homepage");
-
   useEffect(() => {
     const fetchData = async () => {
       await resetSelectedSeats();
@@ -466,8 +460,6 @@ const ReserveSeatsPage = ({ token }) => {
     const handleBeforeUnload = async () => {
       try {
         await resetSelectedSeats();
-        localStorage.removeItem("reservation");
-        localStorage.removeItem("remainingTime");
         setSeats((prevSeats) =>
           prevSeats.map((seat) => ({
             ...seat,
@@ -484,7 +476,7 @@ const ReserveSeatsPage = ({ token }) => {
 
     return () => {
       seatsSubscription.unsubscribe();
-      if (timerId) clearInterval(timerId);
+      if (timerId.current) clearInterval(timerId.current);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [eventId, token, resetSelectedSeats]);
@@ -493,9 +485,9 @@ const ReserveSeatsPage = ({ token }) => {
   useEffect(() => {
     return () => {
       resetSelectedSeats();
-      if (timerId) clearInterval(timerId);
+      if (timerId.current) clearInterval(timerId.current);
     };
-  }, [resetSelectedSeats, timerId]);
+  }, [resetSelectedSeats]);
 
   const seatMapping = seats.reduce((acc, seat) => {
     if (!acc[seat.row]) acc[seat.row] = [];
@@ -513,7 +505,6 @@ const ReserveSeatsPage = ({ token }) => {
         return newZoomLevel;
       });
     };
-    
 
     window.addEventListener("wheel", handleWheel, { passive: false });
 
@@ -532,7 +523,6 @@ const ReserveSeatsPage = ({ token }) => {
       <div className="background-container"></div>
       <div className="page-container">
         <div className="hall-layout">
-          {/* Removed the PARTER element */}
           <div
             className="seats-container"
             style={{ transform: `scale(${zoomLevel})` }}
