@@ -1,0 +1,98 @@
+/* src/styling/orderdetails.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #4d4797;
+  }
+  
+  .order-details-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure it takes up full height */
+    background-color: #4d4797;
+  }
+  
+  .order-details-content {
+    width: 800px; /* Adjust width as needed */
+    margin: 100px auto; /* Center the content */
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 1; /* Ensure content is above any background elements */
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 28px; /* Increased size for Order Summary */
+    text-align: center;
+  }
+  
+  .order-details-section {
+    margin-bottom: 20px; /* Reduced spacing between sections */
+  }
+  
+  .order-details-section h2 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 18px; /* Slightly larger font size for section headers */
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .order-details-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .order-details-item {
+    padding: 8px 0; /* Reduced padding for a more compact look */
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .order-details-item:last-child {
+    border-bottom: none;
+  }
+  
+  .order-details-item span {
+    display: block;
+    font-size: 14px; /* Slightly smaller font size for ticket details */
+    color: #555;
+  }
+  
+  .total-payment {
+    margin-top: 20px; /* Reduced margin for a more compact look */
+    padding-top: 10px; /* Reduced padding */
+    border-top: 2px solid #ddd;
+  }
+  
+  .total-payment h2 {
+    font-size: 22px; /* Larger font size for total payment header */
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .total-payment p {
+    font-size: 20px; /* Slightly smaller font size for total amount */
+    font-weight: bold;
+    color: #000;
+  }
+  
+  .back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+  

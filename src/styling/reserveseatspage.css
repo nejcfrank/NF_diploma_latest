@@ -11,7 +11,7 @@ body {
   background-color: #4d4797; /* Adjust the path as needed */
   background-size: cover;
   background-position: center;
-   /* Add blur effect to the background */
+  /* Add blur effect to the background */
   z-index: -1; /* Ensure the background stays behind other content */
 }
 
@@ -25,7 +25,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  
 }
 
 .hall-layout {
@@ -37,18 +36,17 @@ body {
   align-items: center;
   color: white;
   overflow-x: auto; /* Allows horizontal scrolling if content overflows */
-  
 }
 
 .stage {
   width: 500px;
   height: 80px;
-  background-color: #75C9B7; /* Updated to a shade of blue */
+  background-color: #75c9b7; /* Updated to a shade of blue */
   color: #ffffff; /* Text color */
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Updated box-shadow for a softer effect */
   font-size: 40px;
@@ -81,7 +79,6 @@ body {
   margin-top: 50px;
 }
 
-
 .zoomed {
   /* Optional: You can add specific styles when zoomed in */
 }
@@ -101,7 +98,7 @@ body {
 }
 
 .zoom-controls button {
-  background-color: #75C9B7;
+  background-color: #75c9b7;
   border: none;
   color: white;
   font-size: 16px;
@@ -112,10 +109,8 @@ body {
 }
 
 .zoom-controls button:hover {
-  background-color: #ABD699;
+  background-color: #abd699;
 }
-
-
 
 .seats-row {
   display: flex;
@@ -151,7 +146,7 @@ body {
 }
 
 .available {
-  background-color: #ABD699 /* Green for available seats */
+  background-color: #abd699; /* Green for available seats */
 }
 
 .unavailable {
@@ -168,11 +163,8 @@ body {
 }
 
 .seat.user-selection {
-  
   background-color: white;
-  
 }
-
 
 .confirm-order-button {
   padding: 10px 20px;
@@ -192,7 +184,7 @@ body {
 
 .reserve-button {
   padding: 10px 50px;
-  background-color: #75C9B7;
+  background-color: #75c9b7;
   border: none;
   color: #ffffff;
   text-align: center;
@@ -206,10 +198,9 @@ body {
   margin: 20px auto; /* Adjust margin for spacing */
 }
 
-
 .confirm-order-button:hover,
 .reserve-button:hover {
-  background-color: #ABD699;
+  background-color: #abd699;
 }
 
 .buttons-container {
@@ -227,12 +218,12 @@ h1 {
 }
 
 .corner-component {
-  position:fixed;
+  position: fixed;
   top: 110px;
   right: 40px;
   background-color: white;
   padding: 20px;
-  border: 5px solid #ABD699;
+  border: 5px solid #abd699;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   text-align: center;
@@ -266,8 +257,6 @@ h1 {
   margin-bottom: 30px;
   margin-top: 10px;
 }
-
-
 
 @media (max-width: 768px) {
   .page-container {

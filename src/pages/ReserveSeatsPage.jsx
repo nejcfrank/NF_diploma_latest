@@ -349,14 +349,14 @@ const ReserveSeatsPage = ({ token }) => {
         localStorage.getItem("reservation")
       );
       const seatsToBuy = reservationDetails ? reservationDetails.seats : [];
-
+  
       if (seatsToBuy.length === 0) {
         alert("No seats selected for purchase.");
         return;
       }
-
+  
       const now = new Date();
-
+  
       // Update seats to mark them as bought
       const { error: updateError } = await supabase
         .from("tickets")
@@ -370,30 +370,27 @@ const ReserveSeatsPage = ({ token }) => {
         .eq("event_id", eventId)
         .eq("interaction_made_by_user", token.user.user_metadata.sub) // Ensure the user is the one who reserved the seats
         .eq("reserved", true); // Ensure the seats are reserved
-
+  
       if (updateError) throw updateError;
-
+  
       // Fetch the updated seat data
       const { data: updatedSeatsData, error: fetchError } = await supabase
         .from("tickets")
         .select("*")
         .in("seat_id", seatsToBuy)
         .eq("event_id", eventId);
-
+  
       if (fetchError) throw fetchError;
-
-      // Update the local state
-      const updatedSeats = seats.map((seat) =>
-        seatsToBuy.includes(seat.seat_id)
-          ? updatedSeatsData.find((s) => s.seat_id === seat.seat_id)
-          : seat
-      );
-
-      setSeats(updatedSeats);
+  
+      // Redirect to OrderDetails with ticket info
+      navigate('/order-details', { state: { tickets: updatedSeatsData } });
+  
+      // Cleanup
       localStorage.removeItem("reservation");
       localStorage.removeItem("remainingTime");
       setShowComponent(false);
       setSelectedSeats([]);
+  
     } catch (error) {
       console.error("Error confirming order:", error.message);
     }
