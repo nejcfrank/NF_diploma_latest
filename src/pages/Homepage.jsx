@@ -55,8 +55,15 @@ const Homepage = ({ token }) => {
     }
   };
 
-  const handleReserveSeats = (eventId, hallName) => {
-    navigate(`${hallName}/${eventId}`);
+  const handleReserveSeats = (eventId, hallName, eventDate) => {
+    const currentDate = new Date();
+    const eventDateTime = new Date(eventDate);
+
+    if (currentDate > eventDateTime) {
+      alert("Cannot reserve seats for an event that has already started.");
+    } else {
+      navigate(`${hallName}/${eventId}`);
+    }
   };
 
   const handleEditEvent = async (eventId) => {
@@ -120,86 +127,101 @@ const Homepage = ({ token }) => {
     });
   };
 
+  const isExpired = (eventDate) => {
+    return new Date() > new Date(eventDate);
+  };
+
   return (
     <div className="homepage-container">
       <Navbar token={token} />
 
       <div className="events-container">
         {events.length > 0 ? (
-          events.map((event) => (
-            <div key={event.event_id} className="event-item">
-              {isAdmin && (
-                <div className="admin-actions">
-                  <FaEdit
-                    className="edit-button"
-                    onClick={() => {
-                      setEditingEventId(event.event_id);
-                      setEditEventDetails({
-                        title: event.title,
-                        date: event.date
-                      });
-                    }}
-                  />
-                  <FaTrashAlt
-                    className="delete-button"
-                    onClick={() => handleDeleteEvent(event.event_id)}
-                  />
-                </div>
-              )}
-              <div className="event-details">
-                {editingEventId === event.event_id ? (
-                  <div className="edit-form-container">
-                    <div className="edit-form">
-                      <h2>Edit Event</h2>
-                      <input
-                        type="text"
-                        name="title"
-                        value={editEventDetails.title}
-                        onChange={handleEditChange}
-                        className="input-field"
-                        placeholder="Event Title"
-                      />
-                      <input
-                        type="datetime-local"
-                        name="date"
-                        value={editEventDetails.date.slice(0, 16)}
-                        onChange={handleEditChange}
-                        className="input-field"
-                      />
-                      <div className="edit-actions">
-                        <button
-                          className="save-changes-button"
-                          onClick={() => handleEditEvent(event.event_id)}
-                        >
-                          Save Changes
-                        </button>
-                        <button
-                          className="cancel-edit-button"
-                          onClick={() => setEditingEventId(null)}
-                        >
-                          Cancel
-                        </button>
+          events.map((event) => {
+            const expired = isExpired(event.date);
+            return (
+              <div
+                key={event.event_id}
+                className={`event-item ${expired ? 'blurred' : ''}`}
+              >
+                {isAdmin && (
+                  <div className="admin-actions">
+                    <FaEdit
+                      className={`edit-button ${expired ? 'disabled' : ''}`}
+                      onClick={() => {
+                        if (!expired) {
+                          setEditingEventId(event.event_id);
+                          setEditEventDetails({
+                            title: event.title,
+                            date: event.date
+                          });
+                        }
+                      }}
+                    />
+                    <FaTrashAlt
+                      className="delete-button"
+                      onClick={() => handleDeleteEvent(event.event_id)}
+                    />
+                  </div>
+                )}
+                <div className="event-details">
+                  {editingEventId === event.event_id ? (
+                    <div className="edit-form-container">
+                      <div className="edit-form">
+                        <h2>Edit Event</h2>
+                        <input
+                          type="text"
+                          name="title"
+                          value={editEventDetails.title}
+                          onChange={handleEditChange}
+                          className="input-field"
+                          placeholder="Event Title"
+                        />
+                        <input
+                          type="datetime-local"
+                          name="date"
+                          value={editEventDetails.date.slice(0, 16)}
+                          onChange={handleEditChange}
+                          className="input-field"
+                        />
+                        <div className="edit-actions">
+                          <button
+                            className="save-changes-button"
+                            onClick={() => handleEditEvent(event.event_id)}
+                          >
+                            Save Changes
+                          </button>
+                          <button
+                            className="cancel-edit-button"
+                            onClick={() => setEditingEventId(null)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <>
-                    <h2>{event.title}</h2>
-                    <p>{formatDate(event.date)}</p>
-                    <p>Location: {event.halls?.name}</p>
-                    <button
-                      className="reserve-seats-button"
-                      onClick={() =>
-                        handleReserveSeats(event.event_id, event.halls?.name)
-                      }
-                    >
-                      RESERVE SEATS
-                    </button>
-                  </>
+                  ) : (
+                    <>
+                      <h2>{event.title}</h2>
+                      <p>{formatDate(event.date)}</p>
+                      <p>Location: {event.halls?.name}</p>
+                      <button
+                        className="reserve-seats-button"
+                        onClick={() =>
+                          handleReserveSeats(event.event_id, event.halls?.name, event.date)
+                        }
+                      >
+                        RESERVE SEATS
+                      </button>
+                    </>
+                  )}
+                </div>
+                {expired && (
+                  <div className="unavailable-overlay">EVENT UNAVAILABLE</div>
                 )}
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p>No events available</p>
         )}

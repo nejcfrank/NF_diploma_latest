@@ -1,3 +1,4 @@
+/* General Styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #4d4797;
@@ -73,6 +74,7 @@ body {
   right: 10px;
   display: flex;
   gap: 10px; /* Space between icons */
+  z-index: 2; /* Ensure admin actions are above other content */
 }
 
 .edit-button,
@@ -80,17 +82,19 @@ body {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #007bff; /* Blue color for edit icon */
   font-size: 1.5rem; /* Adjust size of the icon */
   transition: color 0.3s;
+}
+
+.edit-button {
+  color: #007bff; /* Blue color for edit icon */
 }
 
 .delete-button {
   color: #f44336; /* Red color for delete icon */
 }
 
-.edit-button:hover,
-.delete-button:hover {
+.edit-button:hover {
   color: #0056b3; /* Darker blue for edit icon on hover */
 }
 
@@ -98,6 +102,14 @@ body {
   color: #c62828; /* Darker red for delete icon on hover */
 }
 
+/* Disabled Edit Button */
+.edit-button.disabled {
+  color: #bbb; /* Gray color to indicate disabled state */
+  cursor: not-allowed; /* Show not-allowed cursor */
+  filter: grayscale(100%) blur(1px); /* Apply grayscale and blur effect */
+}
+
+/* Logout Button */
 .logout-button {
   background-color: #f44336;
   color: white;
@@ -112,6 +124,7 @@ body {
   background-color: #d32f2f; /* Darker shade for hover effect */
 }
 
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -128,7 +141,7 @@ body {
   margin-right: 10px;
 }
 
-/* Edit form styles */
+/* Edit Form Styles */
 .edit-form-container {
   position: absolute;
   top: 0;
@@ -187,4 +200,27 @@ body {
 
 .cancel-edit-button:hover {
   background-color: #d32f2f; /* Darker shade for cancel button hover effect */
+}
+
+/* Styles for Blurred Effect and Overlay */
+.blurred {
+  filter: blur(0.5px); /* Apply blur effect */
+  position: relative;
+}
+
+.unavailable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 8px; /* Match the border radius of the event item */
+  z-index: 1; /* Ensure the overlay is above the blur effect but below admin actions */
 }

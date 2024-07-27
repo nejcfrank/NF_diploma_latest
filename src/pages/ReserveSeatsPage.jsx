@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../client";
-import SeatsLayout from "./SeatsLayout";
 import ReservationTimer from "./ReservationTimer";
 import Navbar from "./Navbar";
 import "../styling/reserveseatspage.css";
@@ -160,25 +159,38 @@ const ReserveSeatsPage = ({ token }) => {
   // Handle the reserve button click
   const handleReserveButtonClick = async () => {
     try {
+      const event = await fetchEventDetails();
+  
+      if (!event) {
+        alert("Error fetching event details.");
+        return;
+      }
+  
+      if (isEventStarted(event.date)) {
+        alert("The event has already started. You cannot reserve tickets.");
+        navigate("/homepage");
+        return;
+      }
+  
       const userSelectedSeats = selectedSeats.filter((seatId) => {
         const seat = seats.find((s) => s.seat_id === seatId);
         return seat && seat.isUserSelection;
       });
-
+  
       if (userSelectedSeats.length === 0) {
         alert("No seats selected by you to reserve.");
         return;
       }
-
+  
       const { data: reservedSeats, error: reservedError } = await supabase
         .from("tickets")
         .select("seat_id")
         .in("seat_id", userSelectedSeats)
         .eq("reserved", true)
         .eq("event_id", eventId);
-
+  
       if (reservedError) throw reservedError;
-
+  
       const { data: unavailableSeats, error: availabilityError } =
         await supabase
           .from("tickets")
@@ -186,23 +198,23 @@ const ReserveSeatsPage = ({ token }) => {
           .in("seat_id", userSelectedSeats)
           .eq("availability", false)
           .eq("event_id", eventId);
-
+  
       if (availabilityError) throw availabilityError;
-
+  
       if (unavailableSeats.length > 0 || reservedSeats.length > 0) {
         alert(
           "One or more of the selected seats are already reserved or unavailable."
         );
         return;
       }
-
+  
       const now = new Date();
       const expirationTime = now.getTime() + 60000; // 1 minute from now
-
+  
       const storedReservation = JSON.parse(
         localStorage.getItem("reservation")
       ) || { seats: [] };
-
+  
       if (storedReservation.seats.length > 0) {
         const updateReservedAtPromises = storedReservation.seats.map(
           (seatId) => {
@@ -215,13 +227,13 @@ const ReserveSeatsPage = ({ token }) => {
         );
         await Promise.all(updateReservedAtPromises);
       }
-
+  
       const reservationDetails = {
         seats: [...new Set([...storedReservation.seats, ...userSelectedSeats])],
         expirationTime,
       };
       localStorage.setItem("reservation", JSON.stringify(reservationDetails));
-
+  
       const reservePromises = userSelectedSeats.map((seatId) => {
         return supabase
           .from("tickets")
@@ -234,24 +246,24 @@ const ReserveSeatsPage = ({ token }) => {
           .eq("seat_id", seatId)
           .eq("event_id", eventId);
       });
-
+  
       await Promise.all(reservePromises);
-
+  
       const updatedSeats = seats.map((seat) =>
         reservationDetails.seats.includes(seat.seat_id)
           ? { ...seat, reserved: true, reserved_at: now, selected: false }
           : seat
       );
-
+  
       setSeats(updatedSeats);
       setSelectedSeats([]);
       setReservedSeats(reservationDetails.seats);
-
+  
       if (timerId.current) {
         clearInterval(timerId.current);
       }
       startTimer(60);
-
+  
       localStorage.setItem("showComponent", "true");
       setShowComponent(true);
     } catch (error) {
@@ -345,6 +357,19 @@ const ReserveSeatsPage = ({ token }) => {
   // Confirm order and process the payment
   const handleConfirmOrderButtonClick = async () => {
     try {
+      const event = await fetchEventDetails();
+  
+      if (!event) {
+        alert("Error fetching event details.");
+        return;
+      }
+  
+      if (isEventStarted(event.date)) {
+        alert("The event has already started. You cannot buy tickets.");
+        navigate("/homepage");
+        return;
+      }
+  
       const reservationDetails = JSON.parse(
         localStorage.getItem("reservation")
       );
@@ -408,6 +433,28 @@ const ReserveSeatsPage = ({ token }) => {
       console.error("Error during logout:", error.message);
     }
   };
+  const isEventStarted = (eventDate) => {
+    const now = new Date();
+    return now > new Date(eventDate);
+  };
+
+  const fetchEventDetails = async () => {
+    try {
+      const { data: event, error } = await supabase
+        .from('event')
+        .select('date')
+        .eq('event_id', eventId)
+        .single();
+  
+      if (error) throw error;
+  
+      return event;
+    } catch (error) {
+      console.error("Error fetching event details:", error.message);
+      return null;
+    }
+  };
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -453,6 +500,7 @@ const ReserveSeatsPage = ({ token }) => {
         handleReservationExpiration();
       }
     }
+    
 
     const handleBeforeUnload = async () => {
       try {
