@@ -115,46 +115,43 @@ const CreateEvent = ({ token }) => {
   return (
     <div className="create-event-container">
       <Navbar token={token} /> {/* Use the shared Navbar component */}
-
-      <div className="create-event-content">
-        <h2>Create Event</h2>
-        <form onSubmit={handleSubmit} className="create-event-form">
-          <label>
-            Event Name:
-            <input
-              type="text"
-              value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Event Date and Time:
-            <input
-              type="datetime-local"
-              value={eventDateTime}
-              onChange={(e) => setEventDateTime(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Event Location:
-            <select
-              value={selectedHall}
-              onChange={(e) => setSelectedHall(Number(e.target.value))}
-              required
-            >
-              <option value="">Select a hall</option>
-              {halls.map((hall) => (
-                <option key={hall.hall_id} value={hall.hall_id}>
-                  {hall.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">Create Event</button>
-        </form>
-      </div>
+      <h2 className="create-event-heading">Create Event</h2>
+      <form onSubmit={handleSubmit} className="create-event-form">
+        <label>
+          Event Name:
+          <input
+            type="text"
+            value={eventName}
+            onChange={(e) => setEventName(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Event Date and Time:
+          <input
+            type="datetime-local"
+            value={eventDateTime}
+            onChange={(e) => setEventDateTime(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Event Location:
+          <select
+            value={selectedHall}
+            onChange={(e) => setSelectedHall(Number(e.target.value))}
+            required
+          >
+            <option value="">Select a hall</option>
+            {halls.map((hall) => (
+              <option key={hall.hall_id} value={hall.hall_id}>
+                {hall.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="submit">Create Event</button>
+      </form>
     </div>
   );
 };

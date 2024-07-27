@@ -1,11 +1,10 @@
-/* Navbar.css */
-
+/* Navbar styling */
 .navbar {
   display: flex;
   font-weight: 600;
-  justify-content: center; /* Center the content horizontally */
+  justify-content: space-between; /* Adjusted for better spacing */
   align-items: center;
-  padding: 10px 20px;
+  padding: 20px 20px;
   background-color: #abd699; /* Background color for the navbar */
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -16,6 +15,7 @@
   left: 0; /* Align to the left edge */
 }
 
+/* Container for left and right side of the navbar */
 .nav-left, .nav-right {
   display: flex;
   align-items: center;
@@ -29,9 +29,10 @@
   margin-left: auto; /* Ensures proper alignment */
 }
 
+/* Navbar items styling */
 .nav-item {
   margin: 0; /* Remove default margin */
-  padding: 10px 50px; /* Add padding to left and right */
+  padding: 10px 20px; /* Reduced padding */
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
   display: flex;
@@ -45,50 +46,54 @@
   border-radius: 4px;
 }
 
+/* Logo styling */
 .logo {
-  width: 50px;
-  height: 50px;
-  background-image: url("../image/ticket.png"); /* Path to your logo image */
-  background-size: cover;
+  width: 150px; /* Reduced width */
+  height: 38px; /* Reduced height */
+  background-image: url("../image/logo.png"); /* Path to your logo image */
+  background-size: contain; /* Ensures the logo scales properly */
   background-position: center;
   cursor: pointer; /* Makes the logo look clickable */
   margin-right: 20px;
   background-color: transparent; 
 }
 
+/* Avatar container styling */
 .avatar-container {
   display: flex;
   align-items: center;
   position: relative;
 }
 
+/* Avatar styling */
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 40px; /* Reduced width */
+  height: 40px; /* Reduced height */
   border-radius: 50%;
   background-color: #fff;
   background-image: url("../image/avatar.png"); /* Path to your avatar image */
   background-size: cover;
   background-position: center;
-  margin-right: 50px;
+  margin-right: 50px; /* Adjusted margin */
   cursor: pointer; /* Makes the avatar look clickable */
 }
 
+/* Tooltip styling */
 .tooltip {
   display: none; /* Hide tooltip by default */
   position: absolute;
-  top: 50px;
+  top: 35px; /* Adjusted for smaller avatar */
   right: 0;
   padding: 5px 10px;
   color: white;
   background-color: #333; /* Dark background for the tooltip */
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 12px; /* Reduced font size */
   white-space: nowrap;
   z-index: 2000; /* Ensure it stays above other content */
 }
 
 .avatar-container:hover .tooltip {
   display: block; /* Show tooltip on hover */
-  margin-right: 38px;
+  margin-right: 25px; /* Adjusted margin */
 }

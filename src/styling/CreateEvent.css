@@ -1,41 +1,65 @@
 /* CreateEvent.css */
 
 .create-event-container {
+  max-width: 500px; /* Adjusted for a more compact look */
+  margin: auto;
   padding: 20px;
-  padding-top: 70px; /* Adjust this value based on the height of your Navbar */
+  margin-top: 100px;
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for elevation */
+  background-color: #ffffff;
   font-family: Arial, sans-serif;
-  background-color: #f8f9fa; /* Optional: Light background color for the container */
+}
+
+.create-event-heading {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px; /* Larger heading size */
+  color: #333;
 }
 
 .create-event-form {
-  margin-top: 20px;
-  max-width: 600px;
-  margin: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .create-event-form label {
-  display: block;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  font-size: 16px; /* Increase font size for labels */
+  color: #333;
 }
 
 .create-event-form input,
 .create-event-form select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 5px;
+  margin-bottom: 15px; /* Increased spacing between inputs */
+  padding: 12px; /* Increased padding for better appearance */
+  font-size: 16px;
   border: 1px solid #ddd;
+  border-radius: 8px; /* Rounded corners for inputs */
+  outline: none;
 }
 
 .create-event-form button {
-  padding: 10px 20px;
-  border: none;
-  background-color: #007bff;
+  padding: 12px 20px; /* Increased padding for buttons */
+  font-size: 16px;
+  background-color: #75c9b7; /* Stylish button color */
   color: #fff;
-  border-radius: 5px;
+  border: none;
+  border-radius: 8px; /* Rounded corners for buttons */
   cursor: pointer;
+  margin-top: 10px; /* Adjust spacing */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 .create-event-form button:hover {
-  background-color: #0056b3;
+  background-color: #5fae9e; /* Slightly darker shade for hover effect */
+}
+
+@media (max-width: 768px) {
+  .create-event-container {
+    width: 90%;
+    padding: 10px;
+    padding-top: 100px; /* Adjust for smaller screens if needed */
+  }
 }
