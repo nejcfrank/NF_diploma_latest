@@ -1,32 +1,44 @@
+/* General Styles */
 body {
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
+h1 {
+  font-size: 36px;
+  color: #3f51b5;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Background Container */
 .background-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #4d4797; /* Adjust the path as needed */
+  background-color: #4d4797; /* Adjust the color or use an image */
   background-size: cover;
   background-position: center;
-  /* Add blur effect to the background */
-  z-index: -1; /* Ensure the background stays behind other content */
+  z-index: -1;
 }
 
+/* Page Container */
 .page-container {
-  top: 80px;
   position: relative;
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  z-index: 1;
+  top: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 1;
 }
 
+/* Hall Layout */
 .hall-layout {
   font-size: 30px;
   font-weight: 500;
@@ -35,59 +47,42 @@ body {
   flex-direction: column;
   align-items: center;
   color: white;
-  overflow-x: auto; /* Allows horizontal scrolling if content overflows */
+  overflow-x: auto;
 }
 
+/* Stage */
 .stage {
   width: 500px;
   height: 80px;
-  background-color: #75c9b7; /* Updated to a shade of blue */
-  color: #ffffff; /* Text color */
+  background-color: #75c9b7;
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
-
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Updated box-shadow for a softer effect */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   font-size: 40px;
   font-weight: 700;
   margin-bottom: 50px;
 }
 
-.parter {
-  font-size: 24px; /* Increased font size */
-  font-weight: bold; /* Bold font */
-  color: white; /* Text color */
-  margin-bottom: 40px;
-}
-
-.balkon {
-  font-size: 24px; /* Increased font size */
-  font-weight: bold; /* Bold font */
-  color: white; /* Text color */
-  margin-top: 30px; /* Adjust margin as needed */
-  margin-bottom: 40px;
-}
-
+/* Seat Container */
 .seats-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden; /* Prevent scrollbars from appearing */
-  transform-origin: 0 0; /* Set transform origin to top-left */
-  transition: transform 0.3s ease; /* Smooth transition for zoom */
+  overflow: hidden;
+  transform-origin: 0 0;
+  transition: transform 0.3s ease;
   margin-top: 50px;
 }
 
-.zoomed {
-  /* Optional: You can add specific styles when zoomed in */
-}
-
 .seats-container.zoomed {
-  transform: scale(1.5); /* Scale the container to zoom in */
-  transform-origin: center center; /* Center the zoom effect */
+  transform: scale(1.5);
+  transform-origin: center center;
 }
 
+/* Zoom Controls */
 .zoom-controls {
   position: absolute;
   top: 10px;
@@ -112,6 +107,7 @@ body {
   background-color: #abd699;
 }
 
+/* Seats */
 .seats-row {
   display: flex;
 }
@@ -121,14 +117,14 @@ body {
 }
 
 .horizontal-gap {
-  margin-top: 30px; /* Adjust the horizontal gap as needed */
+  margin-top: 30px;
 }
 
 .seat-number {
-  margin-right: 10px; /* Adjust the space between letter and seat */
-  font-size: 1rem; /* Adjust the font size of the seat letter */
-  font-weight: bold; /* Bold font */
-  color: white; /* Text color */
+  margin-right: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
   margin-top: 0.3rem;
 }
 
@@ -146,19 +142,19 @@ body {
 }
 
 .available {
-  background-color: #abd699; /* Green for available seats */
+  background-color: #abd699;
 }
 
 .unavailable {
-  background-color: rgb(139, 37, 37); /* Red for unavailable seats */
+  background-color: rgb(139, 37, 37);
 }
 
 .selected {
-  background-color: #fbff00; /* Yellow for selected seats */
+  background-color: #fbff00;
 }
 
 .reserved {
-  background-color: #ffac27; /* Orange for reserved seats */
+  background-color: #ffac27;
   cursor: not-allowed;
 }
 
@@ -166,36 +162,31 @@ body {
   background-color: white;
 }
 
-.confirm-order-button {
+/* Buttons */
+.confirm-order-button,
+.reserve-button {
   padding: 10px 20px;
-  background-color: #bd1c1c;
   border: none;
   color: white;
   text-align: center;
   text-decoration: none;
   display: block;
-  font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
   transition-duration: 0.4s;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  margin: 20px auto; /* Center the button and add spacing */
+  margin: 20px auto;
+}
+
+.confirm-order-button {
+  background-color: #bd1c1c;
+  font-size: 16px;
 }
 
 .reserve-button {
-  padding: 10px 50px;
   background-color: #75c9b7;
-  border: none;
-  color: #ffffff;
-  text-align: center;
-  text-decoration: none;
-  display: block;
   font-size: 20px;
   font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition-duration: 0.4s;
-  margin: 20px auto; /* Adjust margin for spacing */
 }
 
 .confirm-order-button:hover,
@@ -203,32 +194,7 @@ body {
   background-color: #abd699;
 }
 
-.buttons-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-}
-
-h1 {
-  font-size: 36px;
-  color: #3f51b5;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.corner-component {
-  position: fixed;
-  top: 110px;
-  right: 40px;
-  background-color: white;
-  padding: 20px;
-  border: 5px solid #abd699;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
+/* Reservation Timer */
 .reservation-timer-container {
   position: fixed;
   top: 20px;
@@ -258,6 +224,20 @@ h1 {
   margin-top: 10px;
 }
 
+/* Corner Component */
+.corner-component {
+  position: fixed;
+  top: 110px;
+  right: 40px;
+  background-color: white;
+  padding: 20px;
+  border: 5px solid #abd699;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
   .page-container {
     width: 100%;
@@ -274,6 +254,3 @@ h1 {
     right: 10px;
   }
 }
-
-
-

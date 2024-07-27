@@ -1,60 +1,68 @@
-/* General Styles */
+/* General Body Styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #4d4797;
+  background-color: #4d4797; /* Background color for the entire page */
 }
 
+/* Container for Homepage */
 .homepage-container {
   padding: 20px;
-  padding-top: 70px; /* Adjust according to the height of the Navbar */
-  background-color: #4d4797; /* Light background for the page */
+  padding-top: 100px; /* Space for Navbar */
+  background-color: #4d4797; /* Consistent background color */
 }
 
+/* Events Grid Layout */
 .events-container {
-  display: grid; /* Use CSS Grid for a responsive layout */
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive columns */
-  gap: 20px; /* Space between items */
-  padding-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid layout */
+  gap: 20px; /* Space between event items */
+  padding-top: 20px; /* Top padding */
 }
 
+/* Individual Event Item */
 .event-item {
-  position: relative; /* Position relative to allow absolute positioning of child elements */
+  position: relative; /* Relative positioning for admin actions */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
-  background-color: #f9f9f9; /* Slightly off-white background for a modern look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  background-color: #f9f9f9; /* Light background for event items */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   transition: transform 0.3s, box-shadow 0.3s; /* Smooth transitions */
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  box-sizing: border-box; /* Include padding and border in element's width and height */
 }
 
+/* Hover Effect for Event Item */
 .event-item:hover {
   transform: translateY(-5px); /* Lift effect on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
 
+/* Event Details Styling */
 .event-details {
   flex: 1;
-  padding-right: 40px; /* Space for the admin actions */
+  padding-right: 40px; /* Space for admin actions */
 }
 
+/* Heading in Event Item */
 .event-item h2 {
   margin-bottom: 10px;
-  font-size: 1.25rem; /* Adjust font size */
-  color: #333; /* Darker text color for contrast */
+  font-size: 1.25rem; /* Heading font size */
+  color: #333; /* Darker text color */
 }
 
+/* Paragraphs in Event Item */
 .event-item p {
   margin: 5px 0;
   font-size: 0.875rem; /* Smaller font size for details */
   color: #666; /* Subtle text color */
 }
 
+/* Button Styling */
 .event-item button {
-  background-color: #ABD699; /* Primary button color */
+  background-color: #abd699; /* Primary button color */
   color: white;
   border: none;
   padding: 12px 20px;
@@ -63,11 +71,13 @@ body {
   transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
 }
 
+/* Button Hover Effects */
 .event-item button:hover {
-  background-color: #92b683; /* Darker shade on hover */
+  background-color: #92b683; /* Darker button color on hover */
   transform: scale(1.05); /* Slightly enlarge button on hover */
 }
 
+/* Admin Actions Styling */
 .admin-actions {
   position: absolute;
   top: 10px;
@@ -77,71 +87,42 @@ body {
   z-index: 2; /* Ensure admin actions are above other content */
 }
 
+/* Edit and Delete Button Icons */
 .edit-button,
 .delete-button {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem; /* Adjust size of the icon */
-  transition: color 0.3s;
+  font-size: 1.5rem; /* Icon size */
+  transition: color 0.3s; /* Smooth color transition */
 }
 
+/* Edit Button Styling */
 .edit-button {
   color: #007bff; /* Blue color for edit icon */
 }
 
+.edit-button:hover {
+  color: #0056b3; /* Darker blue on hover */
+}
+
+/* Delete Button Styling */
 .delete-button {
   color: #f44336; /* Red color for delete icon */
 }
 
-.edit-button:hover {
-  color: #0056b3; /* Darker blue for edit icon on hover */
-}
-
 .delete-button:hover {
-  color: #c62828; /* Darker red for delete icon on hover */
+  color: #c62828; /* Darker red on hover */
 }
 
 /* Disabled Edit Button */
 .edit-button.disabled {
-  color: #bbb; /* Gray color to indicate disabled state */
+  color: #bbb; /* Gray color for disabled state */
   cursor: not-allowed; /* Show not-allowed cursor */
-  filter: grayscale(100%) blur(1px); /* Apply grayscale and blur effect */
+  filter: grayscale(100%) blur(1px); /* Grayscale and blur effect */
 }
 
-/* Logout Button */
-.logout-button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.logout-button:hover {
-  background-color: #d32f2f; /* Darker shade for hover effect */
-}
-
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-}
-
-.user-info span {
-  margin-right: 10px;
-}
-
-/* Edit Form Styles */
+/* Edit Form Overlay Styling */
 .edit-form-container {
   position: absolute;
   top: 0;
@@ -154,15 +135,17 @@ body {
   align-items: center;
 }
 
+/* Edit Form Styling */
 .edit-form {
   background: white;
   padding: 20px;
   border-radius: 8px;
   width: 100%; /* Full width */
-  max-width: 600px; /* Maximum width for large screens */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  max-width: 600px; /* Max width for large screens */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
 }
 
+/* Input Fields in Edit Form */
 .input-field {
   display: block;
   width: calc(100% - 20px);
@@ -172,55 +155,59 @@ body {
   border: 1px solid #ddd;
 }
 
+/* Edit Form Action Buttons */
 .edit-actions {
   display: flex;
   justify-content: space-between;
 }
 
+/* Save Changes Button Styling */
 .save-changes-button,
 .cancel-edit-button {
-  background-color: #ABD699; /* Primary button color */
+  background-color: #abd699; /* Primary button color */
   color: white;
   border: none;
   padding: 12px 20px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
 }
 
-.save-changes-button:hover,
-.cancel-edit-button:hover {
+/* Save Changes Button Hover Effect */
+.save-changes-button:hover {
   background-color: #92b683; /* Darker shade on hover */
   transform: scale(1.05); /* Slightly enlarge button on hover */
 }
 
+/* Cancel Edit Button Styling */
 .cancel-edit-button {
   background-color: #f44336; /* Red color for cancel button */
 }
 
 .cancel-edit-button:hover {
-  background-color: #d32f2f; /* Darker shade for cancel button hover effect */
+  background-color: #d32f2f; /* Darker shade for hover effect */
 }
 
-/* Styles for Blurred Effect and Overlay */
+/* Blurred Effect for Expired Events */
 .blurred {
   filter: blur(0.5px); /* Apply blur effect */
   position: relative;
 }
 
+/* Unavailable Overlay for Expired Events */
 .unavailable-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.5rem;
   font-weight: bold;
-  border-radius: 8px; /* Match the border radius of the event item */
-  z-index: 1; /* Ensure the overlay is above the blur effect but below admin actions */
+  border-radius: 8px; /* Match border radius of event item */
+  z-index: 1; /* Overlay above blur effect but below admin actions */
 }

@@ -1,65 +1,70 @@
-/* CreateEvent.css */
-
+/* General Container Styles */
 .create-event-container {
-  max-width: 500px; /* Adjusted for a more compact look */
-  margin: auto;
+  max-width: 500px; /* Restrict container width */
+  margin: 100px auto 0; /* Center container with top margin */
   padding: 20px;
-  margin-top: 100px;
   border: 1px solid #ccc;
   border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for elevation */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
   background-color: #ffffff;
   font-family: Arial, sans-serif;
 }
 
+/* Heading Styles */
 .create-event-heading {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 24px; /* Larger heading size */
+  font-size: 24px; /* Larger text for heading */
   color: #333;
 }
 
+/* Form Styles */
 .create-event-form {
   display: flex;
   flex-direction: column;
 }
 
+/* Label Styles */
 .create-event-form label {
   margin-bottom: 10px;
-  font-size: 16px; /* Increase font size for labels */
+  font-size: 16px; /* Increased font size for labels */
   color: #333;
 }
 
+/* Input and Select Styles */
 .create-event-form input,
 .create-event-form select {
-  margin-bottom: 15px; /* Increased spacing between inputs */
-  padding: 12px; /* Increased padding for better appearance */
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px; /* Rounded corners for inputs */
-  outline: none;
+  margin-bottom: 15px; /* Space between fields */
+  padding: 12px; /* Padding inside fields */
+  font-size: 16px; /* Font size inside fields */
+  border: 1px solid #ddd; /* Light border color */
+  border-radius: 8px; /* Rounded corners */
+  outline: none; /* Remove default outline */
 }
 
+/* Button Styles */
 .create-event-form button {
-  padding: 12px 20px; /* Increased padding for buttons */
-  font-size: 16px;
-  background-color: #75c9b7; /* Stylish button color */
-  color: #fff;
-  border: none;
-  border-radius: 8px; /* Rounded corners for buttons */
-  cursor: pointer;
-  margin-top: 10px; /* Adjust spacing */
-  transition: background-color 0.3s; /* Smooth transition for hover effect */
+  padding: 12px 20px; /* Button padding */
+  font-size: 16px; /* Font size inside button */
+  background-color: #abd699; /* Button color */
+  color: #fff; /* Button text color */
+  border: none; /* Remove default border */
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-top: 10px; /* Space above button */
+  transition: background-color 0.3s; /* Smooth color transition */
 }
 
+/* Button Hover Effect */
 .create-event-form button:hover {
-  background-color: #5fae9e; /* Slightly darker shade for hover effect */
+  background-color: #8db87b; /* Darker button color on hover */
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .create-event-container {
-    width: 90%;
-    padding: 10px;
-    padding-top: 100px; /* Adjust for smaller screens if needed */
+    width: 90%; /* Full-width container on small screens */
+    padding: 10px; /* Reduced padding */
+    margin-top: 100px; /* Maintain top margin */
   }
 }
