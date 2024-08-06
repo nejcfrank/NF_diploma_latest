@@ -16,7 +16,8 @@
 }
 
 /* Container for left and right side of the navbar */
-.nav-left, .nav-right {
+.nav-left,
+.nav-right {
   display: flex;
   align-items: center;
 }
@@ -40,7 +41,8 @@
   height: 100%; /* Make sure the item takes up the full height of the navbar */
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover,
+.nav-item.active {
   background-color: #75c9b7; /* Darker blue on hover and active state */
   color: #fff; /* White text color for better contrast */
   border-radius: 4px;
@@ -55,7 +57,7 @@
   background-position: center;
   cursor: pointer; /* Makes the logo look clickable */
   margin-right: 20px;
-  background-color: transparent; 
+  background-color: transparent;
 }
 
 /* Avatar container styling */
@@ -82,15 +84,13 @@
 .tooltip {
   display: none; /* Hide tooltip by default */
   position: absolute;
-  top: 35px; /* Adjusted for smaller avatar */
+  top: 43px;
   right: 0;
-  padding: 5px 10px;
   color: white;
   background-color: #333; /* Dark background for the tooltip */
   border-radius: 4px;
   font-size: 12px; /* Reduced font size */
   white-space: nowrap;
-  z-index: 2000; /* Ensure it stays above other content */
 }
 
 .avatar-container:hover .tooltip {

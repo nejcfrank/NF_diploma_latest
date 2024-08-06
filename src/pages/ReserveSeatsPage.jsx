@@ -19,19 +19,25 @@ const ReserveSeatsPage = ({ token }) => {
   // Function to fetch and process seat data
   const fetchSeats = async () => {
     try {
-      // Fetch ticket and seat data with a join
+      // Fetch ticket and seat data with a join, including hall_id
       const { data: tickets, error: ticketsError } = await supabase
         .from("tickets")
         .select(
           `
-          *,
-          seats: seat_id (seat_position)
-        `
+        *,
+        seats: seat_id (seat_position),
+        hall_id
+      `
         )
         .eq("event_id", eventId)
         .order("seat_id", { ascending: true });
 
       if (ticketsError) throw ticketsError;
+
+      // Log hall_id for verification
+      if (tickets.length > 0) {
+        console.log("Hall ID:", tickets[0].hall_id); // Assuming hall_id is the same for all tickets in the result
+      }
 
       // Create a mapping of seat positions to their respective seat IDs
       const seatMapping = tickets.reduce((acc, ticket) => {
@@ -268,6 +274,45 @@ const ReserveSeatsPage = ({ token }) => {
       setShowComponent(true);
     } catch (error) {
       console.error("Error processing reserve operation:", error.message);
+    }
+  };
+
+  const handleCancelReservationClick = async () => {
+    try {
+      const userId = token.user.user_metadata.sub;
+      const storedReservation = JSON.parse(localStorage.getItem("reservation"));
+      const seatsToCancel = storedReservation ? storedReservation.seats : [];
+  
+      if (seatsToCancel.length === 0) {
+        alert("No reservations to cancel.");
+        return;
+      }
+  
+      // Update seats to mark them as not reserved
+      const { error: updateError } = await supabase
+        .from("tickets")
+        .update({
+          reserved: false,
+          reserved_at: null,
+          interaction_made_by_user: null,
+        })
+        .in("seat_id", seatsToCancel)
+        .eq("event_id", eventId)
+        .eq("interaction_made_by_user", userId); // Ensure the user is the one who reserved the seats
+  
+      if (updateError) throw updateError;
+  
+      // Fetch the updated seat data
+      await fetchSeats(); // Refresh seat data
+  
+      // Cleanup
+      localStorage.removeItem("reservation");
+      localStorage.removeItem("remainingTime");
+      setShowComponent(false);
+      setSelectedSeats([]);
+      setReservedSeats([]);
+    } catch (error) {
+      console.error("Error canceling reservation:", error.message);
     }
   };
 
@@ -537,22 +582,15 @@ const ReserveSeatsPage = ({ token }) => {
     return acc;
   }, {});
 
-  useEffect(() => {
-    const handleWheel = (event) => {
-      event.preventDefault();
-      const zoomFactor = 0.0005; // Adjust this to control zoom sensitivity
-      setZoomLevel((prevZoomLevel) => {
-        let newZoomLevel = prevZoomLevel + event.deltaY * -zoomFactor;
-        newZoomLevel = Math.min(Math.max(newZoomLevel, 0.5), 3); // Zoom limits
-        return newZoomLevel;
-      });
-    };
+  // Handle zoom in
+  const handleZoomIn = () => {
+    setZoomLevel((prevZoomLevel) => Math.min(prevZoomLevel + 0.1, 3)); // Increase zoom level, with a max of 3
+  };
 
-    window.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () =>
-      window.removeEventListener("wheel", handleWheel, { passive: false });
-  }, []);
+  // Handle zoom out
+  const handleZoomOut = () => {
+    setZoomLevel((prevZoomLevel) => Math.max(prevZoomLevel - 0.1, 0.5)); // Decrease zoom level, with a min of 0.5
+  };
 
   const stressTest = async () => {
     const promises = [];
@@ -627,16 +665,22 @@ const ReserveSeatsPage = ({ token }) => {
       />
       <div className="background-container"></div>
       <div className="page-container">
-      {token?.user?.user_metadata?.role === "admin" && (
-              <button className="stresstest" onClick={stressTest}>
-                STRESS TEST
-              </button>
-            )}
+        {token?.user?.user_metadata?.role === "admin" && (
+          <button className="stresstest" onClick={stressTest}>
+            STRESS TEST
+          </button>
+        )}
         <div className="hall-layout">
-          
+        <div className="zoom-controls">
+              <button onClick={handleZoomIn}>+</button>
+              <button onClick={handleZoomOut}>-</button>
+            </div>
           <div
             className="seats-container"
-            style={{ transform: `scale(${zoomLevel})` }}
+            style={{
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: "center center",
+            }}
           >
             
 
@@ -666,18 +710,21 @@ const ReserveSeatsPage = ({ token }) => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-        {selectedSeats.length > 0 && (
+            {selectedSeats.length > 0 && (
           <button className="reserve-button" onClick={handleReserveButtonClick}>
             RESERVE
           </button>
         )}
+          </div>
+          
+        </div>
+        
         {showComponent && (
           <ReservationTimer
             remainingTime={remainingTime}
             reservedSeats={reservedSeats}
             handleConfirmOrderButtonClick={handleConfirmOrderButtonClick}
+            handleCancelReservationClick={handleCancelReservationClick} 
           />
         )}
       </div>
