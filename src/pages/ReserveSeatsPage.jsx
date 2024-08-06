@@ -12,7 +12,7 @@ const ReserveSeatsPage = ({ token }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [reservedSeats, setReservedSeats] = useState([]);
   const [showComponent, setShowComponent] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(60);
+  const [remainingTime, setRemainingTime] = useState(300);
   const timerId = useRef(null);
   const [zoomLevel, setZoomLevel] = useState(1);
 
@@ -160,37 +160,37 @@ const ReserveSeatsPage = ({ token }) => {
   const handleReserveButtonClick = async () => {
     try {
       const event = await fetchEventDetails();
-  
+
       if (!event) {
         alert("Error fetching event details.");
         return;
       }
-  
+
       if (isEventStarted(event.date)) {
         alert("The event has already started. You cannot reserve tickets.");
         navigate("/homepage");
         return;
       }
-  
+
       const userSelectedSeats = selectedSeats.filter((seatId) => {
         const seat = seats.find((s) => s.seat_id === seatId);
         return seat && seat.isUserSelection;
       });
-  
+
       if (userSelectedSeats.length === 0) {
         alert("No seats selected by you to reserve.");
         return;
       }
-  
+
       const { data: reservedSeats, error: reservedError } = await supabase
         .from("tickets")
         .select("seat_id")
         .in("seat_id", userSelectedSeats)
         .eq("reserved", true)
         .eq("event_id", eventId);
-  
+
       if (reservedError) throw reservedError;
-  
+
       const { data: unavailableSeats, error: availabilityError } =
         await supabase
           .from("tickets")
@@ -198,23 +198,23 @@ const ReserveSeatsPage = ({ token }) => {
           .in("seat_id", userSelectedSeats)
           .eq("availability", false)
           .eq("event_id", eventId);
-  
+
       if (availabilityError) throw availabilityError;
-  
+
       if (unavailableSeats.length > 0 || reservedSeats.length > 0) {
         alert(
           "One or more of the selected seats are already reserved or unavailable."
         );
         return;
       }
-  
+
       const now = new Date();
-      const expirationTime = now.getTime() + 60000; // 1 minute from now
-  
+      const expirationTime = now.getTime() + 300000; // 1 minute from now
+
       const storedReservation = JSON.parse(
         localStorage.getItem("reservation")
       ) || { seats: [] };
-  
+
       if (storedReservation.seats.length > 0) {
         const updateReservedAtPromises = storedReservation.seats.map(
           (seatId) => {
@@ -227,13 +227,13 @@ const ReserveSeatsPage = ({ token }) => {
         );
         await Promise.all(updateReservedAtPromises);
       }
-  
+
       const reservationDetails = {
         seats: [...new Set([...storedReservation.seats, ...userSelectedSeats])],
         expirationTime,
       };
       localStorage.setItem("reservation", JSON.stringify(reservationDetails));
-  
+
       const reservePromises = userSelectedSeats.map((seatId) => {
         return supabase
           .from("tickets")
@@ -246,24 +246,24 @@ const ReserveSeatsPage = ({ token }) => {
           .eq("seat_id", seatId)
           .eq("event_id", eventId);
       });
-  
+
       await Promise.all(reservePromises);
-  
+
       const updatedSeats = seats.map((seat) =>
         reservationDetails.seats.includes(seat.seat_id)
           ? { ...seat, reserved: true, reserved_at: now, selected: false }
           : seat
       );
-  
+
       setSeats(updatedSeats);
       setSelectedSeats([]);
       setReservedSeats(reservationDetails.seats);
-  
+
       if (timerId.current) {
         clearInterval(timerId.current);
       }
-      startTimer(60);
-  
+      startTimer(300);
+
       localStorage.setItem("showComponent", "true");
       setShowComponent(true);
     } catch (error) {
@@ -358,30 +358,30 @@ const ReserveSeatsPage = ({ token }) => {
   const handleConfirmOrderButtonClick = async () => {
     try {
       const event = await fetchEventDetails();
-  
+
       if (!event) {
         alert("Error fetching event details.");
         return;
       }
-  
+
       if (isEventStarted(event.date)) {
         alert("The event has already started. You cannot buy tickets.");
         navigate("/homepage");
         return;
       }
-  
+
       const reservationDetails = JSON.parse(
         localStorage.getItem("reservation")
       );
       const seatsToBuy = reservationDetails ? reservationDetails.seats : [];
-  
+
       if (seatsToBuy.length === 0) {
         alert("No seats selected for purchase.");
         return;
       }
-  
+
       const now = new Date();
-  
+
       // Update seats to mark them as bought
       const { error: updateError } = await supabase
         .from("tickets")
@@ -395,27 +395,26 @@ const ReserveSeatsPage = ({ token }) => {
         .eq("event_id", eventId)
         .eq("interaction_made_by_user", token.user.user_metadata.sub) // Ensure the user is the one who reserved the seats
         .eq("reserved", true); // Ensure the seats are reserved
-  
+
       if (updateError) throw updateError;
-  
+
       // Fetch the updated seat data
       const { data: updatedSeatsData, error: fetchError } = await supabase
         .from("tickets")
         .select("*")
         .in("seat_id", seatsToBuy)
         .eq("event_id", eventId);
-  
+
       if (fetchError) throw fetchError;
-  
+
       // Redirect to OrderDetails with ticket info
-      navigate('/order-details', { state: { tickets: updatedSeatsData } });
-  
+      navigate("/order-details", { state: { tickets: updatedSeatsData } });
+
       // Cleanup
       localStorage.removeItem("reservation");
       localStorage.removeItem("remainingTime");
       setShowComponent(false);
       setSelectedSeats([]);
-  
     } catch (error) {
       console.error("Error confirming order:", error.message);
     }
@@ -441,20 +440,19 @@ const ReserveSeatsPage = ({ token }) => {
   const fetchEventDetails = async () => {
     try {
       const { data: event, error } = await supabase
-        .from('event')
-        .select('date')
-        .eq('event_id', eventId)
+        .from("event")
+        .select("date")
+        .eq("event_id", eventId)
         .single();
-  
+
       if (error) throw error;
-  
+
       return event;
     } catch (error) {
       console.error("Error fetching event details:", error.message);
       return null;
     }
   };
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -500,7 +498,6 @@ const ReserveSeatsPage = ({ token }) => {
         handleReservationExpiration();
       }
     }
-    
 
     const handleBeforeUnload = async () => {
       try {
@@ -557,6 +554,69 @@ const ReserveSeatsPage = ({ token }) => {
       window.removeEventListener("wheel", handleWheel, { passive: false });
   }, []);
 
+  const stressTest = async () => {
+    const promises = [];
+    const now = new Date(); // Get the current time
+    const utcNow = now.toISOString(); // Convert to UTC ISO string
+
+    // Create 50 reservation attempts
+    for (let index = 0; index < 50; index++) {
+      promises.push(
+        supabase
+          .from("tickets")
+          .update({
+            reserved: true,
+            reserved_at: utcNow,
+            interaction_made_by_user: index + 1,
+            selected: false,
+          })
+          .eq("seat_id", selectedSeats[0])
+          .eq("event_id", eventId)
+      );
+    }
+
+    // Handle the results of all promises
+    try {
+      const results = await Promise.allSettled(promises); //Promise.all zagotovi da se vsi kličejo naenkrat
+
+      // Track successful reservation
+      let successfulReservation = null;
+
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") {
+          console.log(
+            `Promise ${index + 1} resolved with value:`,
+            result.value
+          );
+          // Check if the reservation was successful and store the result
+          if (!successfulReservation) {
+            successfulReservation = {
+              index: index + 1,
+              ...result.value,
+            };
+          }
+        } else {
+          console.error(
+            `Promise ${index + 1} rejected with reason:`,
+            result.reason
+          );
+        }
+      });
+
+      // Log the details of the successful reservation
+      if (successfulReservation) {
+        console.log(
+          `Successfully reserved seat with request number ${successfulReservation.index}`
+        );
+        console.log(`Details:`, successfulReservation);
+      } else {
+        console.log("No successful reservations.");
+      }
+    } catch (error) {
+      console.error("Error in stress test:", error.message);
+    }
+  };
+
   return (
     <>
       <Navbar
@@ -567,11 +627,19 @@ const ReserveSeatsPage = ({ token }) => {
       />
       <div className="background-container"></div>
       <div className="page-container">
+      {token?.user?.user_metadata?.role === "admin" && (
+              <button className="stresstest" onClick={stressTest}>
+                STRESS TEST
+              </button>
+            )}
         <div className="hall-layout">
+          
           <div
             className="seats-container"
             style={{ transform: `scale(${zoomLevel})` }}
           >
+            
+
             <div className="stage">STAGE</div>
             {Object.keys(seatMapping).map((row, rowIndex) => (
               <div className="seats-row" key={rowIndex}>

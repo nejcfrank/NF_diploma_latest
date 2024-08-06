@@ -63,39 +63,44 @@ useEffect(() => {
 }, [reservedSeats]);
 
 
-  return (
-    <div className="corner-component">
-      <h1>CART</h1>
-      <div className="reservation-timer">
-        Reservation expires in: <span className="timer">{remainingTime}</span>{" "}
-        seconds
-      </div>
-      <div className="order-details">
-        <h3>ORDER DETAILS</h3>
-        {reservedSeats.map((seatId) => (
-          <div key={seatId}>
-            Seat Position: {seatPositions[seatId] || "N/A"} | Price: €{seatPrices[seatId] || "N/A"}
-            <hr />
-          </div>
-        ))}
-        <div className="total-price">
-          <strong>Total Price: €{totalPrice}</strong>
-        </div>
-      </div>
-      <button
-        className="confirm-order-button"
-        onClick={handleConfirmOrderButtonClick}
-      >
-        BUY NOW
-      </button>
+const formatTime = (timeInSeconds) => {
+  const minutes = Math.floor(timeInSeconds / 60);
+  const seconds = timeInSeconds % 60;
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
+return (
+  <div className="corner-component">
+    <h1>CART</h1>
+    <div className="reservation-timer">
+      Reservation expires in: <span className="timer">{formatTime(remainingTime)}</span>
     </div>
-  );
+    <div className="order-details">
+      <h3>ORDER DETAILS</h3>
+      {reservedSeats.map((seatId) => (
+        <div key={seatId}>
+          Seat Position: {seatPositions[seatId] || "N/A"} | Price: €{seatPrices[seatId] || "N/A"}
+          <hr />
+        </div>
+      ))}
+      <div className="total-price">
+        <strong>Total Price: €{totalPrice}</strong>
+      </div>
+    </div>
+    <button
+      className="confirm-order-button"
+      onClick={handleConfirmOrderButtonClick}
+    >
+      BUY NOW
+    </button>
+  </div>
+);
 };
 
 ReservationTimer.propTypes = {
-  remainingTime: PropTypes.number.isRequired,
-  reservedSeats: PropTypes.array.isRequired,
-  handleConfirmOrderButtonClick: PropTypes.func.isRequired,
+remainingTime: PropTypes.number.isRequired,
+reservedSeats: PropTypes.array.isRequired,
+handleConfirmOrderButtonClick: PropTypes.func.isRequired,
 };
 
 export default ReservationTimer;
