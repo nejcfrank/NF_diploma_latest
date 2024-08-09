@@ -1,24 +1,30 @@
 /* Global Styles */
 body {
   font-family: Arial, sans-serif;
+  background-image: url("../image/background.jpg");
+  background-color: #4d4797; /* Blue color with 30% opacity */
+  background-blend-mode: overlay; /* Blend the background image with the background color */
+  background-size: cover; /* Ensure the background image covers the entire area */
+  background-repeat: no-repeat; /* Prevent the background image from repeating */
 }
 
 /* Container for SignUp Form */
 .signup-container {
-  max-width: 400px;
+  max-width: 800px;
   margin: auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+  margin-top: 120px;
 }
 
 /* Heading */
 .signup-heading {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
+  margin-bottom: 30px;
+  font-size: 30px;
   color: #333;
 }
 
@@ -49,7 +55,7 @@ body {
 .signup-button {
   padding: 12px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #6559eb;;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -58,7 +64,7 @@ body {
 }
 
 .signup-button:hover {
-  background-color: #0056b3;
+  background-color: #6559eb;;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -86,7 +92,8 @@ body {
 /* Link to Login */
 .signup-link-text {
   margin-top: 20px;
-  text-align: center;
+    text-align: center;
+    font-size: 18px;
 }
 
 .signup-link {

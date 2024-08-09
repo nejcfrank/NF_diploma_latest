@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { supabase } from "../client";
 import { Link, useNavigate } from "react-router-dom";
 import "../styling/Login.css"; // Import CSS file
+import Navbar from "./Navbar"; // Import the shared Navbar component
 
 const Login = ({ setToken }) => {
   let navigate = useNavigate();
@@ -46,6 +47,7 @@ const Login = ({ setToken }) => {
 
   return (
     <div className="login-container">
+       <Navbar isLoginPage={true} />
       <h2 className="login-heading">LOGIN</h2>
       <form onSubmit={handleSubmit} className="login-form">
         <input

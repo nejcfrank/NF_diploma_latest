@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { supabase } from "../client";
 import { Link, useNavigate } from "react-router-dom";
 import "../styling/SignUp.css"; // Import CSS file
+import Navbar from "./Navbar"; 
 
 const SignUp = () => {
   let navigate = useNavigate();
@@ -96,7 +97,9 @@ const SignUp = () => {
   }
 
   return (
+    
     <div className="signup-container">
+      <Navbar isLoginPage={true} />
       <h2 className="signup-heading">Sign Up</h2>
       <form onSubmit={handleSubmit} className="signup-form">
         <input

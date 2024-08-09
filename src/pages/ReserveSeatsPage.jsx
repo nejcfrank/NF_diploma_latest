@@ -34,11 +34,6 @@ const ReserveSeatsPage = ({ token }) => {
 
       if (ticketsError) throw ticketsError;
 
-      // Log hall_id for verification
-      if (tickets.length > 0) {
-        console.log("Hall ID:", tickets[0].hall_id); // Assuming hall_id is the same for all tickets in the result
-      }
-
       // Create a mapping of seat positions to their respective seat IDs
       const seatMapping = tickets.reduce((acc, ticket) => {
         const seatPosition = ticket.seats?.seat_position; // Retrieve seat_position from the joined seat data
@@ -282,12 +277,12 @@ const ReserveSeatsPage = ({ token }) => {
       const userId = token.user.user_metadata.sub;
       const storedReservation = JSON.parse(localStorage.getItem("reservation"));
       const seatsToCancel = storedReservation ? storedReservation.seats : [];
-  
+
       if (seatsToCancel.length === 0) {
         alert("No reservations to cancel.");
         return;
       }
-  
+
       // Update seats to mark them as not reserved
       const { error: updateError } = await supabase
         .from("tickets")
@@ -299,12 +294,12 @@ const ReserveSeatsPage = ({ token }) => {
         .in("seat_id", seatsToCancel)
         .eq("event_id", eventId)
         .eq("interaction_made_by_user", userId); // Ensure the user is the one who reserved the seats
-  
+
       if (updateError) throw updateError;
-  
+
       // Fetch the updated seat data
       await fetchSeats(); // Refresh seat data
-  
+
       // Cleanup
       localStorage.removeItem("reservation");
       localStorage.removeItem("remainingTime");
@@ -592,68 +587,71 @@ const ReserveSeatsPage = ({ token }) => {
     setZoomLevel((prevZoomLevel) => Math.max(prevZoomLevel - 0.1, 0.5)); // Decrease zoom level, with a min of 0.5
   };
 
-  const stressTest = async () => {
-    const promises = [];
-    const now = new Date(); // Get the current time
-    const utcNow = now.toISOString(); // Convert to UTC ISO string
+  /*
+const stressTest = async () => {
+  const promises = [];
+  const now = new Date(); // Get the current time
+  const utcNow = now.toISOString(); // Convert to UTC ISO string
 
-    // Create 50 reservation attempts
-    for (let index = 0; index < 50; index++) {
-      promises.push(
-        supabase
-          .from("tickets")
-          .update({
-            reserved: true,
-            reserved_at: utcNow,
-            interaction_made_by_user: index + 1,
-            selected: false,
-          })
-          .eq("seat_id", selectedSeats[0])
-          .eq("event_id", eventId)
-      );
-    }
+  // Create 50 reservation attempts
+  for (let index = 0; index < 50; index++) {
+    promises.push(
+      supabase
+        .from("tickets")
+        .update({
+          reserved: true,
+          reserved_at: utcNow,
+          interaction_made_by_user: index + 1,
+          selected: false,
+        })
+        .eq("seat_id", selectedSeats[0])
+        .eq("event_id", eventId)
+    );
+  }
 
-    // Handle the results of all promises
-    try {
-      const results = await Promise.allSettled(promises); //Promise.all zagotovi da se vsi kličejo naenkrat
+  // Handle the results of all promises
+  try {
+    const results = await Promise.allSettled(promises); // Promise.all ensures all are called at once
 
-      // Track successful reservation
-      let successfulReservation = null;
+    // Track successful reservation
+    let successfulReservation = null;
 
-      results.forEach((result, index) => {
-        if (result.status === "fulfilled") {
-          console.log(
-            `Promise ${index + 1} resolved with value:`,
-            result.value
-          );
-          // Check if the reservation was successful and store the result
-          if (!successfulReservation) {
-            successfulReservation = {
-              index: index + 1,
-              ...result.value,
-            };
-          }
-        } else {
-          console.error(
-            `Promise ${index + 1} rejected with reason:`,
-            result.reason
-          );
-        }
-      });
-
-      // Log the details of the successful reservation
-      if (successfulReservation) {
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled") {
         console.log(
-          `Successfully reserved seat with request number ${successfulReservation.index}`
+          `Promise ${index + 1} resolved with value:`,
+          result.value
         );
-        console.log(`Details:`, successfulReservation);
+        // Check if the reservation was successful and store the result
+        if (!successfulReservation) {
+          successfulReservation = {
+            index: index + 1,
+            ...result.value,
+          };
+        }
       } else {
-        console.log("No successful reservations.");
+        console.error(
+          `Promise ${index + 1} rejected with reason:`,
+          result.reason
+        );
       }
-    } catch (error) {
-      console.error("Error in stress test:", error.message);
+    });
+
+    // Log the details of the successful reservation
+    if (successfulReservation) {
+      console.log(
+        `Successfully reserved seat with request number ${successfulReservation.index}`
+      );
+      console.log(`Details:`, successfulReservation);
+    } else {
+      console.log("No successful reservations.");
     }
-  };
+  } catch (error) {
+    console.error("Error in stress test:", error.message);
+  }
+};
+*/
+
 
   return (
     <>
@@ -665,16 +663,18 @@ const ReserveSeatsPage = ({ token }) => {
       />
       <div className="background-container"></div>
       <div className="page-container">
-        {token?.user?.user_metadata?.role === "admin" && (
-          <button className="stresstest" onClick={stressTest}>
-            STRESS TEST
-          </button>
-        )}
+        {/*
+      {token?.user?.user_metadata?.role === "admin" && (
+        <button className="stresstest" onClick={stressTest}>
+          STRESS TEST
+        </button>
+      )}
+      */}
         <div className="hall-layout">
-        <div className="zoom-controls">
-              <button onClick={handleZoomIn}>+</button>
-              <button onClick={handleZoomOut}>-</button>
-            </div>
+          <div className="zoom-controls">
+            <button onClick={handleZoomIn}>+</button>
+            <button onClick={handleZoomOut}>-</button>
+          </div>
           <div
             className="seats-container"
             style={{
@@ -682,8 +682,6 @@ const ReserveSeatsPage = ({ token }) => {
               transformOrigin: "center center",
             }}
           >
-            
-
             <div className="stage">STAGE</div>
             {Object.keys(seatMapping).map((row, rowIndex) => (
               <div className="seats-row" key={rowIndex}>
@@ -711,20 +709,22 @@ const ReserveSeatsPage = ({ token }) => {
               </div>
             ))}
             {selectedSeats.length > 0 && (
-          <button className="reserve-button" onClick={handleReserveButtonClick}>
-            RESERVE
-          </button>
-        )}
+              <button
+                className="reserve-button"
+                onClick={handleReserveButtonClick}
+              >
+                RESERVE
+              </button>
+            )}
           </div>
-          
         </div>
-        
+
         {showComponent && (
           <ReservationTimer
             remainingTime={remainingTime}
             reservedSeats={reservedSeats}
             handleConfirmOrderButtonClick={handleConfirmOrderButtonClick}
-            handleCancelReservationClick={handleCancelReservationClick} 
+            handleCancelReservationClick={handleCancelReservationClick}
           />
         )}
       </div>

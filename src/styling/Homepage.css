@@ -1,11 +1,21 @@
 /* General Body Styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #4d4797; /* Background color for the entire page */
+  background-image: url("../image/background.jpg");
+  background-color: #4d4797; /* Blue color with 30% opacity */
+  background-blend-mode: overlay; /* Blend the background image with the background color */
+  background-size: cover; /* Ensure the background image covers the entire area */
+  background-repeat: no-repeat; /* Prevent the background image from repeating */
+  
 }
 
 /* Container for Homepage */
 .homepage-container {
+  background-image: url("../image/background.jpg");
+  background-color: #4d4797; /* Blue color with 30% opacity */
+  background-blend-mode: overlay; /* Blend the background image with the background color */
+  background-size: cover; /* Ensure the background image covers the entire area */
+  background-repeat: no-repeat; /* Prevent the background image from repeating */
   padding: 20px;
   padding-top: 100px; /* Space for Navbar */
   background-color: #4d4797; /* Consistent background color */
@@ -62,18 +72,20 @@ body {
 
 /* Button Styling */
 .event-item button {
-  background-color: #abd699; /* Primary button color */
+  background-color: #6559eb;; /* Primary button color */
   color: white;
+  font-size: 14px;
   border: none;
   padding: 12px 20px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+  margin-top: 15px;
 }
 
 /* Button Hover Effects */
 .event-item button:hover {
-  background-color: #92b683; /* Darker button color on hover */
+  background-color: #453e8a;; /* Darker button color on hover */
   transform: scale(1.05); /* Slightly enlarge button on hover */
 }
 
@@ -99,7 +111,7 @@ body {
 
 /* Edit Button Styling */
 .edit-button {
-  color: #007bff; /* Blue color for edit icon */
+  color: #6559eb;; /* Blue color for edit icon */
 }
 
 .edit-button:hover {

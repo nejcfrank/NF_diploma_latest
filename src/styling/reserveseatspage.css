@@ -1,8 +1,6 @@
 /* General Styles */
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
 }
 
 h1 {
@@ -14,6 +12,11 @@ h1 {
 
 /* Background Container */
 .background-container {
+  background-image: url("../image/background.jpg");
+  background-color: #4d4797; /* Blue color with 30% opacity */
+  background-blend-mode: overlay; /* Blend the background image with the background color */
+  background-size: cover; /* Ensure the background image covers the entire area */
+  background-repeat: no-repeat; /* Prevent the background image from repeating */
   position: fixed;
   top: 0;
   left: 0;
@@ -52,9 +55,9 @@ h1 {
 
 /* Stage */
 .stage {
-  width: 500px;
+  width: 600px;
   height: 80px;
-  background-color: #75c9b7;
+  background-color: #47c25c;
   color: #ffffff;
   display: flex;
   justify-content: center;
@@ -64,7 +67,7 @@ h1 {
   font-size: 40px;
   font-weight: 700;
   margin-bottom: 50px;
-  margin-top: 40px;
+  margin-top: 70px;
 }
 
 /* Seat Container */
@@ -94,7 +97,7 @@ h1 {
 }
 
 .zoom-controls button {
-  background-color: #abd699; /* Modern blue background color */
+  background-color: #47c25c; /* Modern blue background color */
   color: #fff; /* White text color */
   border: none;
   border-radius: 5px; /* Rounded corners */
@@ -105,7 +108,7 @@ h1 {
 }
 
 .zoom-controls button:hover {
-  background-color: #75c9b7; /* Darker blue on hover */
+  background-color: #42b155; /* Darker blue on hover */
 }
 
 .zoom-controls button:active {
@@ -180,23 +183,23 @@ h1 {
 }
 
 .confirm-order-button {
-  background-color: #bd1c1c;
+  background-color: #47c25c;
   font-size: 16px;
 }
 
 .reserve-button {
-  background-color: #75c9b7;
+  background-color: #47c25c;
   font-size: 20px;
   font-weight: 600;
 }
 
 .confirm-order-button:hover,
 .reserve-button:hover {
-  background-color: #abd699;
+  background-color: #46af58;
 }
 
 .cancel-reservation-button{
-  background-color: #bd1c1c;
+  background-color: #47c25c;
   font-size: 16px;
 }
 
@@ -239,12 +242,12 @@ h1 {
   margin: 10px auto; /* Centered and margin to match reserve-button */
   font-size: 16px; /* Same font size as confirm-order-button */
  
-  background-color: #bd1c1c; /* Red background for cancel */
+  background-color: #47c25c; /* Red background for cancel */
 }
 
 /* Hover effect for Cancel Reservation Button */
 .cancel-reservation-button:hover {
-  background-color: #abd699;; /* Darker red on hover */
+  background-color: #46af58;; /* Darker red on hover */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow on hover */
 }
 
@@ -338,6 +341,6 @@ h1 {
 }
 
 .stresstest {
-  margin-left: -1800px;
+  margin-left: -1000px;
   margin-top: 10px;
 }

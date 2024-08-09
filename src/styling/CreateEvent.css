@@ -1,6 +1,6 @@
 /* General Container Styles */
 .create-event-container {
-  max-width: 500px; /* Restrict container width */
+  max-width: 800px; /* Restrict container width */
   margin: 100px auto 0; /* Center container with top margin */
   padding: 20px;
   border: 1px solid #ccc;
@@ -13,8 +13,8 @@
 /* Heading Styles */
 .create-event-heading {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px; /* Larger text for heading */
+  margin-bottom: 30px;
+  font-size: 30px; /* Larger text for heading */
   color: #333;
 }
 
@@ -46,7 +46,7 @@
 .create-event-form button {
   padding: 12px 20px; /* Button padding */
   font-size: 16px; /* Font size inside button */
-  background-color: #abd699; /* Button color */
+  background-color: #6559eb; /* Button color */
   color: #fff; /* Button text color */
   border: none; /* Remove default border */
   border-radius: 8px; /* Rounded corners */
@@ -57,7 +57,7 @@
 
 /* Button Hover Effect */
 .create-event-form button:hover {
-  background-color: #8db87b; /* Darker button color on hover */
+  background-color: #5b51cc; /* Darker button color on hover */
 }
 
 /* Responsive Design */
